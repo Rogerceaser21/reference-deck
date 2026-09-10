@@ -486,9 +486,11 @@ ul.plain li::before { content:"\25B8  "; color:var(--p-i); font-weight:800; }
 .cfu-panel.open { display:block; }
 .cfu-kind { display:block; font-family:var(--font-display); font-size:calc(var(--small-size) * 0.9);
   color:var(--p-o); margin-bottom:0.5em; }
-.chip-tab.q + .cfu-panel .cfu-kind, .cfu-panel.q .cfu-kind { color:var(--p-i); }
-.cfu-ask { display:block; font-size:var(--h3-size); line-height:1.32; }
-.cfu-move { display:block; margin-top:0.7em; font-size:var(--body-size); line-height:1.4; color:var(--mist); }
+.cfu-panel.q .cfu-kind { color:var(--p-i); }
+/* the question is for the room, so it is the biggest thing on the panel; the move under
+   it is for the teacher standing at the board */
+.cfu-ask { display:block; font-size:calc(var(--h3-size) * 1.35); line-height:1.26; font-weight:700; }
+.cfu-move { display:block; margin-top:0.7em; font-size:var(--small-size); line-height:1.42; color:var(--mist); }
 .cfu-sc { display:block; margin-top:0.6em; font-family:var(--font-label); font-size:var(--label-size);
   line-height:1.2; color:var(--p-s); }
 .cfu-pick { margin-top:0.85em; min-height:44px; padding:0.25em 0.9em; cursor:pointer; border:0;
@@ -499,7 +501,6 @@ ul.plain li::before { content:"\25B8  "; color:var(--p-i); font-weight:800; }
 /* the marker is a fragment and nothing else: no room, no ink */
 .chip-mark { position:absolute; left:0; top:0; width:1px; height:1px;
   overflow:hidden; pointer-events:none !important; opacity:0 !important; }
-.g-paper .cfu-panel { background:var(--panel); color:#F2F5FF; }
 @media (max-width:900px) { .cfu-panel { width:min(72%, 520px); } }
 
 /* ---- RING STEPS ----
@@ -1196,10 +1197,30 @@ ul.plain li::before { color:var(--p-i-ink); }
 .fs-btn:hover { background:#D8CBAB; }
 .ctrl-divider { background:rgba(0,0,0,.22); }
 .edit-toggle { background:var(--panel); color:var(--ink); }
+/* The gear, its control and the chips on the light ground. Same shapes, the palette's
+   own ink instead of the dark theme's near white, so every one of them clears AA. */
 .timer-gear { background:var(--panel); color:var(--p-o-ink); }
 .timer-set { background:var(--panel); }
-.timer-set button { background:var(--panel-2); color:#F2F5FF; }
-.timer-set button.ts-go { background:var(--p-o); color:var(--edge); }
+.timer-set button { background:var(--panel-2); color:var(--ink);
+  box-shadow:inset calc(var(--px) * -1) calc(var(--px) * -1) 0 rgba(0,0,0,.16),
+             inset var(--px) var(--px) 0 rgba(255,255,255,.9); }
+.timer-set button.ts-go { background:var(--p-o); color:var(--ink); }
+.ts-min { background:var(--well-2); color:var(--ink);
+  box-shadow:inset var(--px) var(--px) 0 rgba(0,0,0,.14); }
+.ts-cap { color:var(--mist); }
+.chip-tab { background:var(--panel-2); color:var(--mist);
+  box-shadow:inset calc(var(--px) * -1) calc(var(--px) * -1) 0 rgba(0,0,0,.16),
+             inset var(--px) var(--px) 0 rgba(255,255,255,.9); }
+.chip-tab.is-open { background:var(--p-o); color:var(--ink); }
+.chip-tab.q.is-open { background:var(--p-i); color:var(--ink); }
+.cfu-panel { background:var(--panel); color:var(--ink);
+  box-shadow:inset calc(var(--px) * -1) calc(var(--px) * -1) 0 rgba(0,0,0,.16),
+             inset var(--px) var(--px) 0 rgba(255,255,255,.9), 0 16px 44px rgba(0,0,0,.22); }
+.cfu-kind { color:var(--p-o-ink); }
+.cfu-panel.q .cfu-kind { color:var(--p-i-ink); }
+.cfu-move { color:var(--mist); }
+.cfu-sc { color:var(--p-s-ink); }
+.cfu-pick { background:var(--p-t); color:#FFF8E7; }
 .timer-pill { background:var(--panel); color:var(--p-i-ink);
   box-shadow:inset calc(var(--px) * -1) calc(var(--px) * -1) 0 rgba(0,0,0,.16),
              inset var(--px) var(--px) 0 rgba(255,255,255,.9), 0 8px 26px rgba(0,0,0,.2); }
