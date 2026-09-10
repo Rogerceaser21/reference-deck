@@ -1,0 +1,11 @@
+.DS_Store
+*.tmp
+*.log
+Thumbs.db
+generate-images*.py
+mcp-config-to-paste.json
+.claude/
+
+baseline-*.html
+export-*.html
+roundtrip.html
