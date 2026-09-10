@@ -2337,8 +2337,18 @@ function measureChipGutter() {
 function chipsOf(slide) { return (slide && slide._chips) || []; }
 function syncChips() {
   document.querySelectorAll('section.slide.has-chips').forEach(slide => {
-    chipsOf(slide).forEach(chip => {
-      const open = chip.preview || chip.mark.classList.contains('fragment-visible');
+    const chips = chipsOf(slide);
+    /* One panel on screen at a time. A slide may carry a CFU and a Q, and both panels
+       sit over the right of the slide, so drawing both would be two questions on top of
+       each other and neither readable. The one showing is the LAST chip whose step is
+       out, which makes NEXT read as: open the CFU, then close it and open the Q, then
+       leave the slide; BACK runs it back the other way. A preview always wins, because
+       a tap is the teacher asking for that one. */
+    let at = -1;
+    chips.forEach((c, i) => { if (c.mark.classList.contains('fragment-visible')) at = i; });
+    chips.forEach((c, i) => { if (c.preview) at = i; });
+    chips.forEach((chip, i) => {
+      const open = i === at;
       chip.panel.classList.toggle('open', open);
       chip.tab.classList.toggle('is-open', open);
       chip.tab.setAttribute('aria-expanded', open ? 'true' : 'false');
