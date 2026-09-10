@@ -2695,11 +2695,20 @@ class SlidePresentation {
     return Array.from(this.slides[this.current].querySelectorAll('[data-fragment]'))
       .sort((a, b) => parseInt(a.dataset.fragment, 10) - parseInt(b.dataset.fragment, 10));
   }
+  /* One press is one NUMBER, not one element. Two elements may share a fragment number
+     on purpose: a ring step's hidden marker and the short label that reveals with it are
+     one step of the walk, so they have to come out together. On a slide where every
+     number is its own element, which is every other slide, this behaves exactly as the
+     one element per press version did. */
+  fragNum(el) { return parseInt(el.dataset.fragment, 10); }
   next() {
     if (overviewOpen()) { deckOverview.close(); return; }
     const frags = this.getFragments();
-    for (const f of frags) {
-      if (!f.classList.contains('fragment-visible')) { f.classList.add('fragment-visible'); return; }
+    const hidden = frags.filter(f => !f.classList.contains('fragment-visible'));
+    if (hidden.length) {
+      const n = this.fragNum(hidden[0]);
+      hidden.forEach(f => { if (this.fragNum(f) === n) f.classList.add('fragment-visible'); });
+      return;
     }
     const nx = this.nextVisible(this.current, 1);
     if (nx !== null) this.goTo(nx);
@@ -2707,8 +2716,11 @@ class SlidePresentation {
   prev() {
     if (overviewOpen()) { deckOverview.close(); return; }
     const frags = this.getFragments();
-    for (let i = frags.length - 1; i >= 0; i--) {
-      if (frags[i].classList.contains('fragment-visible')) { frags[i].classList.remove('fragment-visible'); return; }
+    const shown = frags.filter(f => f.classList.contains('fragment-visible'));
+    if (shown.length) {
+      const n = this.fragNum(shown[shown.length - 1]);
+      shown.forEach(f => { if (this.fragNum(f) === n) f.classList.remove('fragment-visible'); });
+      return;
     }
     const pv = this.nextVisible(this.current, -1);
     if (pv !== null) this.goTo(pv);
