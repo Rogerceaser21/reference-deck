@@ -236,16 +236,6 @@ body { font-family:var(--font-body); font-size:var(--body-size); color:#F2F5FF; 
 }
 
 /* ===========================================
-   THE LESSON LOOP, drawn in blocks on the housekeeping slide
-   =========================================== */
-.loop { display:flex; flex-wrap:wrap; gap:clamp(4px,0.5vw,9px); align-items:stretch; }
-.loop-step { font-family:var(--font-label); font-size:var(--label-size); line-height:1.15;
-  background:var(--panel); color:var(--mist); padding:0.18em 0.6em;
-  box-shadow:inset calc(var(--px) * -1) calc(var(--px) * -1) 0 rgba(0,0,0,.45),
-             inset var(--px) var(--px) 0 rgba(255,255,255,.12); }
-.loop-step.on { background:var(--gold); color:var(--ink); }
-
-/* ===========================================
    THE TRIP: the data journey, drawn in the slide, block by block.
    Seven stations left to right, each one a small CSS and SVG block with its
    own label, then the return arrow under the whole row. Nothing links out.
@@ -1167,9 +1157,6 @@ ul.steps li, ul.plain li { color:var(--ink);
 ul.plain li::before { color:var(--p-i-ink); }
 .sc-p { color:var(--ink);
   box-shadow:inset calc(var(--px) * -1) calc(var(--px) * -1) 0 rgba(0,0,0,.16); }
-.loop-step { color:var(--mist);
-  box-shadow:inset calc(var(--px) * -1) calc(var(--px) * -1) 0 rgba(0,0,0,.16),
-             inset var(--px) var(--px) 0 rgba(255,255,255,.9); }
 .tcall { background:#FFF4D6; color:#5A4300; }
 .tcall::before { color:var(--p-o-ink); }
 .class-list li { background:#FFFFFF; color:var(--ink); box-shadow:inset -2px -2px 0 rgba(0,0,0,.14); }
@@ -1370,35 +1357,6 @@ ul.plain li::before { color:var(--p-i-ink); }
       </div>
     </div>
     <p class="small reveal" style="margin-top:calc(var(--element-gap) * 0.5)">Press the Overview button at the bottom left at any time to see this plan again.</p>
-  </div>
-</section>
-
-<!-- 3 · The loop every lesson -->
-<section data-element="entry" class="slide g-panel" data-notes="&lt;strong&gt;Still 14:00 to 14:05.&lt;/strong&gt; Point along the loop so the room knows the shape of the next seventy minutes. &lt;strong&gt;Say it: the Do Now has already started, and nobody waits for me.&lt;/strong&gt;">
-  <div class="slide-content" style="max-width:min(96vw,2400px)">
-    <p class="eyebrow reveal">// the_loop_every_lesson</p>
-    <h2 class="reveal" style="margin-bottom:calc(var(--element-gap) * 0.6)">The loop we run every lesson</h2>
-    <div class="loop reveal">
-      <span class="loop-step on">Do Now</span>
-      <span class="loop-step">What we are learning</span>
-      <span class="loop-step">Last lesson</span>
-      <span class="loop-step on">Lap 1</span>
-      <span class="loop-step">Brain break</span>
-      <span class="loop-step on">Lap 2</span>
-      <span class="loop-step">Brain break</span>
-      <span class="loop-step">Tick and reflect</span>
-      <span class="loop-step">Exit Ticket</span>
-    </div>
-    <div class="grid reveal" style="grid-template-columns:repeat(2, minmax(0,1fr)); gap:clamp(8px,1.2vw,20px); margin-top:var(--element-gap)">
-      <div class="tblock i">
-        <p class="lede" style="color:var(--p-i-ink)">Same seats all lesson</p>
-        <p style="margin-top:0.3em">Period 9 opens with a where we are moment. You stay in the seat you are in now.</p>
-      </div>
-      <div class="tblock o">
-        <p class="lede" style="color:var(--p-o-ink)">Your sheet is the record</p>
-        <p style="margin-top:0.3em">Everything you write today goes on the printed sheet, and the sheet comes in at the door.</p>
-      </div>
-    </div>
   </div>
 </section>
 
