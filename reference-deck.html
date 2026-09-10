@@ -480,19 +480,16 @@ ul.plain li::before { content:"\25B8  "; color:var(--p-i); font-weight:800; }
 .chip-tab.q.is-open { background:var(--p-i); }
 .cfu-panel { position:absolute; right:calc(var(--chip-gutter, 64px) + 12px); top:50%;
   transform:translateY(-50%); z-index:9; display:none;
-  width:min(46%, 760px); max-height:84%; overflow:auto; padding:clamp(0.7rem,1.5vw,1.4rem);
+  width:max-content; max-width:min(46%, 760px); max-height:84%; overflow:auto; padding:clamp(0.7rem,1.5vw,1.4rem);
   background:var(--panel); color:#F2F5FF; text-align:left;
   box-shadow:inset calc(var(--px) * -1) calc(var(--px) * -1) 0 rgba(0,0,0,.5), inset var(--px) var(--px) 0 rgba(255,255,255,.12), 0 16px 50px rgba(0,0,0,.55); }
 .cfu-panel.open { display:block; }
-.cfu-kind { display:block; font-family:var(--font-display); font-size:calc(var(--small-size) * 0.9);
-  color:var(--p-o); margin-bottom:0.5em; }
-.cfu-panel.q .cfu-kind { color:var(--p-i); }
-/* the question is for the room, so it is the biggest thing on the panel; the move under
-   it is for the teacher standing at the board */
+/* The panel is the question and the Pick a name button, and nothing else: no heading, no
+   move text, no criterion line (deck law, The CFU and Question chips, point 3; Igor,
+   10 Sep 2026, "Just need the question plus the name picker and let's move on"). The
+   question is for the room, so it keeps the size it had, and the box is now sized to it
+   rather than to the three lines that used to sit under it. */
 .cfu-ask { display:block; font-size:calc(var(--h3-size) * 1.35); line-height:1.26; font-weight:700; }
-.cfu-move { display:block; margin-top:0.7em; font-size:var(--small-size); line-height:1.42; color:var(--mist); }
-.cfu-sc { display:block; margin-top:0.6em; font-family:var(--font-label); font-size:var(--label-size);
-  line-height:1.2; color:var(--p-s); }
 .cfu-pick { margin-top:0.85em; min-height:44px; padding:0.25em 0.9em; cursor:pointer; border:0;
   font-family:var(--font-label); font-size:var(--label-size); background:var(--p-t); color:var(--edge);
   box-shadow:inset calc(var(--px) * -1) calc(var(--px) * -1) 0 rgba(0,0,0,.45), inset var(--px) var(--px) 0 rgba(255,255,255,.14); }
@@ -501,7 +498,7 @@ ul.plain li::before { content:"\25B8  "; color:var(--p-i); font-weight:800; }
 /* the marker is a fragment and nothing else: no room, no ink */
 .chip-mark { position:absolute; left:0; top:0; width:1px; height:1px;
   overflow:hidden; pointer-events:none !important; opacity:0 !important; }
-@media (max-width:900px) { .cfu-panel { width:min(72%, 520px); } }
+@media (max-width:900px) { .cfu-panel { max-width:min(72%, 520px); } }
 
 /* ---- RING STEPS ----
    A sheet slot may walk its rings through several steps on NEXT
@@ -1216,10 +1213,6 @@ ul.plain li::before { color:var(--p-i-ink); }
 .cfu-panel { background:var(--panel); color:var(--ink);
   box-shadow:inset calc(var(--px) * -1) calc(var(--px) * -1) 0 rgba(0,0,0,.16),
              inset var(--px) var(--px) 0 rgba(255,255,255,.9), 0 16px 44px rgba(0,0,0,.22); }
-.cfu-kind { color:var(--p-o-ink); }
-.cfu-panel.q .cfu-kind { color:var(--p-i-ink); }
-.cfu-move { color:var(--mist); }
-.cfu-sc { color:var(--p-s-ink); }
 .cfu-pick { background:var(--p-t); color:#FFF8E7; }
 .timer-pill { background:var(--panel); color:var(--p-i-ink);
   box-shadow:inset calc(var(--px) * -1) calc(var(--px) * -1) 0 rgba(0,0,0,.16),
@@ -2256,6 +2249,9 @@ function syncRingSteps() {
    A slide declares its check in data-cfu and its one must-not-forget question in
    data-q, each written as three parts split by " || ": the question, the move, and
    the success criterion it references. A data-q may carry the question alone.
+   The PANEL shows part one and part one only: the question, big enough for the back of
+   the room, and a Pick a name button under it. The move and the criterion are kept in the
+   attribute for the record and read out of the speaker notes (Igor, 10 Sep 2026).
    The chip sits greyed on the right edge from the moment the slide opens. It is the
    LAST fragment of the slide, so once every reveal is out NEXT opens the panel, NEXT
    again leaves the slide and BACK closes the panel and stays. A tap on the chip, or
@@ -2299,25 +2295,13 @@ function buildChips(picker) {
       panel.className = 'cfu-panel ' + spec.kind;
       panel.setAttribute('role', 'dialog');
       panel.setAttribute('aria-label', spec.title);
-      const kind = document.createElement('span');
-      kind.className = 'cfu-kind';
-      kind.textContent = spec.title;
+      /* Part one and part one only. The move and the success criterion stay in the
+         attribute for the record and in the speaker notes for the teacher, and the
+         panel Igor sees mid lesson is the question and the button under it. */
       const ask = document.createElement('span');
       ask.className = 'cfu-ask';
       ask.textContent = parts.ask;
-      panel.appendChild(kind); panel.appendChild(ask);
-      if (parts.move) {
-        const mv = document.createElement('span');
-        mv.className = 'cfu-move';
-        mv.textContent = parts.move;
-        panel.appendChild(mv);
-      }
-      if (parts.sc) {
-        const sc = document.createElement('span');
-        sc.className = 'cfu-sc';
-        sc.textContent = parts.sc;
-        panel.appendChild(sc);
-      }
+      panel.appendChild(ask);
       const pick = document.createElement('button');
       pick.type = 'button';
       pick.className = 'cfu-pick';
