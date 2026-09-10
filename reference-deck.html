@@ -455,6 +455,27 @@ ul.plain li::before { content:"\25B8  "; color:var(--p-i); font-weight:800; }
 .sh-zone.row.ringed::after { inset:-3px; border-width:3px; }
 @keyframes ringpulse { 0%,100% { transform:scale(1); opacity:1; } 50% { transform:scale(1.03); opacity:.7; } }
 
+/* ---- RING STEPS ----
+   A sheet slot may walk its rings through several steps on NEXT
+   (data-ring-steps="b5:gold|b6:gold|b7:gold"). Each step after the first owns one
+   hidden fragment marker, so the clicker, the arrow keys, the bottom bar and BACK
+   all step the ring the way they step any other reveal. A marker takes no room at
+   all: it is absolutely positioned, so slideOverflow steps over it exactly as it
+   steps over every other absolutely positioned child, and it can never make a
+   slide look taller than it is. */
+.ringstep-mark { position:absolute; left:0; top:0; width:1px; height:1px;
+  overflow:hidden; pointer-events:none !important; opacity:0 !important; }
+/* A sheet led slide: the words are the heading, the timer, the link buttons and a
+   one word step label, so the sheet takes the room they leave rather than a modest
+   share of it (deck law, The opening slides, point 4). The stage keeps the label
+   column's width whether a label is showing or not, so the sheet never resizes as
+   the ring steps along. */
+.sheet-stage { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,auto);
+  gap:clamp(0.6rem,1.7vw,1.7rem); align-items:center; width:100%; }
+.stepcol { display:flex; flex-direction:column; align-items:flex-start;
+  gap:clamp(0.35rem,1.1vh,0.9rem); min-width:11ch; }
+@media (max-width:900px) { .sheet-stage { grid-template-columns:1fr; } }
+
 .ring-key { display:flex; flex-wrap:wrap; gap:0.5em 1.1em; font-family:var(--font-label);
   font-size:calc(clamp(0.95rem,1.6vw,1.25rem) * var(--font-scale)); }
 .ring-key span { display:inline-flex; align-items:center; gap:0.4em; }
@@ -2087,10 +2108,11 @@ const RUNTIME_STRIP = {
   containers: ['.sheet-slot', '.nav-dots', '#pkQueue', '#pkRoster', '#pkNote', '#notesBody',
                 '#ovGrid', '#ovFan', '#slideNum', '#notesCounter'],
   /* removed outright: the boot code creates these */
-  nodes: ['.pic-open', '.timer-pill', 'scribe-shadow'],
+  nodes: ['.pic-open', '.timer-pill', '.ringstep-mark', 'scribe-shadow'],
   /* attributes written at run time, as [selector, attribute] */
   attrs: [['*', 'data-orig-html'], ['*', 'contenteditable'],
           ['#navPrev', 'disabled'], ['#navNext', 'disabled'],
+          ['[data-ring-step]', 'data-fragment'], ['.sheet-slot', 'data-ring-at'],
           ['*', 'data-scribe-recorder-ready']],
   /* classes toggled at run time, as [selector, class] */
   classes: [['.slide', 'visible'], ['.slide', 'active'], ['*', 'fragment-visible'],
@@ -2179,21 +2201,114 @@ function buildSheets() {
   if (!tpl) return;
   document.querySelectorAll('.sheet-slot').forEach(slot => {
     slot.appendChild(tpl.content.cloneNode(true));
-    const sheet = slot.querySelector('.sheet');
     slot.appendChild(makeOpenBtn('Open sheet', 'Open the student sheet full screen', 'sheet-open'));
-    const spec = (slot.dataset.rings || '').split(',').map(s => s.trim()).filter(Boolean);
-    if (!spec.length) return;
-    sheet.classList.add('has-ring');
-    const holes = [];
-    spec.forEach(s => {
-      const parts = s.split(':');
-      const el = sheet.querySelector('.' + parts[0]);
-      if (!el) return;
-      el.classList.add('ringed', 'ring-' + (parts[1] || 'red'));
-      holes.push(['--l', '--t', '--w', '--h'].map(v => parseFloat(el.style.getPropertyValue(v))));
-    });
-    if (holes.length) sheet.insertBefore(buildWash(holes), sheet.querySelector('.sh-zone'));
+    renderRings(slot, slot.dataset.rings || '');
   });
+}
+
+/* Draw a slot's rings and its wash from a data-rings spec, clearing whatever was
+   drawn before. One function, so a slot that steps its ring on NEXT and a slot that
+   never moves are drawn by exactly the same code. */
+function renderRings(slot, spec) {
+  const sheet = slot.querySelector('.sheet');
+  if (!sheet) return;
+  Array.from(sheet.querySelectorAll('.ringed')).forEach(el =>
+    el.classList.remove('ringed', 'ring-red', 'ring-green', 'ring-gold'));
+  const old = sheet.querySelector('.sheet-wash');
+  if (old) old.remove();
+  sheet.classList.remove('has-ring');
+  const parts = (spec || '').split(',').map(x => x.trim()).filter(Boolean);
+  if (!parts.length) return;
+  sheet.classList.add('has-ring');
+  const holes = [];
+  parts.forEach(x => {
+    const bits = x.split(':');
+    const el = sheet.querySelector('.' + bits[0]);
+    if (!el) return;
+    el.classList.add('ringed', 'ring-' + (bits[1] || 'red'));
+    holes.push(['--l', '--t', '--w', '--h'].map(v => parseFloat(el.style.getPropertyValue(v))));
+  });
+  if (holes.length) sheet.insertBefore(buildWash(holes), sheet.querySelector('.sh-zone'));
+}
+
+/* ===========================================
+   RING STEPS
+   Igor, 10 September 2026: "How I usually run this is just open the Sheet and the
+   animation is exactly what I need." So a sheet task is one slide and the ring walks
+   its boxes on NEXT, rather than a slide per box with the words printed twice.
+   A slot declares its walk in data-ring-steps, steps separated by a pipe, each step
+   an ordinary data-rings spec: data-ring-steps="b5:gold|b6:gold|b7:gold".
+   The walk rides on the deck's own fragments, so NEXT, the arrow keys, the clicker
+   and the bottom bar all step it, BACK steps it back, and an Overview tile shows the
+   slide at rest. Step one is the slide as it opens and owns no marker; every step
+   after it gets one hidden marker, numbered after every other fragment on the slide.
+   A step label is an ordinary element carrying data-ring-step="2", and the engine
+   gives it the fragment number of that step, so the label and the ring move together.
+   =========================================== */
+function ringStepsOf(slot) {
+  const raw = slot && slot.dataset ? slot.dataset.ringSteps : '';
+  if (!raw) return null;
+  const steps = raw.split('|').map(x => x.trim()).filter(Boolean);
+  return steps.length > 1 ? steps : null;
+}
+function maxFragment(slide) {
+  let m = 0;
+  slide.querySelectorAll('[data-fragment]').forEach(el => {
+    if (el.hasAttribute('data-ring-step')) return;   /* a step label is numbered BY the walk */
+    const n = parseInt(el.dataset.fragment, 10);
+    if (isFinite(n)) m = Math.max(m, n);
+  });
+  return m;
+}
+function buildRingSteps() {
+  document.querySelectorAll('.slide').forEach(slide => {
+    const slot = slide.querySelector('.sheet-slot[data-ring-steps]');
+    const steps = slot && ringStepsOf(slot);
+    if (!steps) return;
+    /* an export of an export creates nothing twice */
+    Array.from(slide.querySelectorAll('.ringstep-mark')).forEach(m => m.remove());
+    const base = maxFragment(slide);
+    const host = slide.querySelector('.slide-content') || slide;
+    for (let k = 1; k < steps.length; k++) {
+      const m = document.createElement('span');
+      m.className = 'ringstep-mark';
+      m.setAttribute('aria-hidden', 'true');
+      m.dataset.fragment = String(base + k);
+      host.appendChild(m);
+    }
+    slide.querySelectorAll('[data-ring-step]').forEach(el => {
+      const k = parseInt(el.dataset.ringStep, 10);
+      if (!isFinite(k) || k < 1) return;
+      el.dataset.fragment = String(base + Math.min(k, steps.length - 1));
+    });
+  });
+  syncRingSteps();
+}
+/* which step a slide is at: how many of its markers are out */
+function ringStepAt(slide) {
+  let n = 0;
+  slide.querySelectorAll('.ringstep-mark').forEach(m => {
+    if (m.classList.contains('fragment-visible')) n++;
+  });
+  return n;
+}
+function syncRingSteps() {
+  document.querySelectorAll('.sheet-slot[data-ring-steps]').forEach(slot => {
+    if (slot.closest('#ovFan')) return;            /* a fan out tile is a copy, never driven */
+    const slide = slot.closest('.slide');
+    const steps = ringStepsOf(slot);
+    if (!slide || !steps) return;
+    const want = steps[Math.min(ringStepAt(slide), steps.length - 1)];
+    if (slot.dataset.ringAt === want) return;      /* already drawn, so no needless redraw */
+    renderRings(slot, want);
+    slot.dataset.ringAt = want;
+  });
+}
+/* One place every fragment move calls, so the rings (and, from step 3, the chips)
+   can never fall out of step with what is on the screen. */
+function syncFragments() {
+  syncRingSteps();
+  if (typeof syncChips === 'function') syncChips();
 }
 
 /* Every picture in the deck gets a labelled button under it: a real <button>
@@ -2311,6 +2426,13 @@ function slideOverflow(content) {
 const PIC_MIN = 128;
 const PIC_MAX_W = 0.62;   /* share of the content box's width  */
 const PIC_MAX_H = 0.50;   /* share of its height, gutter to gutter */
+/* A sheet led slide (.sheet-big) is the one exception, and it is not a bigger guess:
+   the caps come off, and the measured overflow test below is left to decide. The
+   words are still laid out first at their own fixed size and nothing shrinks them,
+   so the sheet simply takes every pixel the words leave, which is what "as big as
+   the slide allows" means (deck law, The opening slides, point 4). */
+const PIC_BIG_W = 1.00;
+const PIC_BIG_H = 0.98;
 function picRoom(content) {
   const cs = getComputedStyle(content);
   return {
@@ -2344,8 +2466,9 @@ function fitPictures() {
     const content = fig.closest('.slide-content');
     if (!content) return;
     const room = picRoom(content);
-    const capH = Math.max(PIC_MIN, room.h * PIC_MAX_H);
-    const hi = Math.max(PIC_MIN, Math.floor(room.w * PIC_MAX_W));
+    const big = fig.classList.contains('sheet-big');
+    const capH = Math.max(PIC_MIN, room.h * (big ? PIC_BIG_H : PIC_MAX_H));
+    const hi = Math.max(PIC_MIN, Math.floor(room.w * (big ? PIC_BIG_W : PIC_MAX_W)));
     const at = (w) => {
       fig.style.setProperty('--pic-w', Math.floor(w) + 'px');
       return picFits(content) && fig.offsetHeight <= capH + 1;
@@ -3600,6 +3723,17 @@ class DeckOverview {
                       e.removeAttribute('data-timer'); e.removeAttribute('data-timer-group'); });
     Array.from(c.querySelectorAll('a, button, input, textarea, select, [contenteditable], [tabindex]'))
       .forEach(e => { e.setAttribute('tabindex', '-1'); e.removeAttribute('contenteditable'); });
+    /* A tile shows the slide AT REST, which for a ring step slide is every step out,
+       so the ring sits on the last box of the walk. The markers themselves and the
+       chips are runtime nodes and never appear in a tile (deck law, The CFU and
+       Question chips, point 6). */
+    Array.from(c.querySelectorAll('.ringstep-mark, .chip-rail, .cfu-panel')).forEach(e => e.remove());
+    Array.from(c.querySelectorAll('.sheet-slot[data-ring-steps]')).forEach(slot => {
+      const steps = ringStepsOf(slot);
+      if (!steps) return;
+      slot.removeAttribute('data-ring-at');
+      renderRings(slot, steps[steps.length - 1]);
+    });
     c.setAttribute('inert', '');
     return c;
   }
@@ -4246,6 +4380,7 @@ class NextLessonNotes {
    =========================================== */
 buildSheets();
 buildPictureButtons();
+buildRingSteps();
 const presentation = new SlidePresentation();
 const speakerNotes = new SpeakerNotesPanel(presentation);
 presentation.onTripleTap = () => speakerNotes.toggle();
@@ -4263,6 +4398,15 @@ const deckNav = new DeckNav(presentation, coldCall);
 const editor = new InlineEditor(presentation);
 deckOverview = new DeckOverview(presentation);
 const nextLessonNotes = new NextLessonNotes();
+
+/* Every move that can change which fragments are out re-syncs the ring steps (and
+   the chips). next() and prev() do not go through update() when they only reveal a
+   fragment, so wrapping update() alone would leave the ring a step behind. */
+['next', 'prev', 'goTo', 'jumpTo'].forEach(name => {
+  const orig = presentation[name].bind(presentation);
+  presentation[name] = function () { const r = orig.apply(null, arguments); syncFragments(); return r; };
+});
+syncFragments();
 
 /* The deck opens on the Overview, because the Overview is the lesson plan on
    screen. A link that names a slide (#slide-12, #s12 or #12) opens there
