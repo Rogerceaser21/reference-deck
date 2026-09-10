@@ -1372,7 +1372,7 @@ ul.plain li::before { color:var(--p-i-ink); }
         <p class="lede" style="color:var(--p-s-ink)">Lesson 1</p>
         <p style="margin-top:0.3em"><b>Saying No to Cyberbullying: the role play.</b></p>
         <div class="picfig plan-pic">
-          <img class="photo" src="assets/mce-remove-player.png" alt="The Permission Options dialog in Minecraft Education, showing a permissions level dropdown set to Operator and a Remove Player button underneath">
+          <img class="photo" src="assets/lesson1-role-play-1.jpg" alt="Four Minecraft players in a sunny plains biome. The host holds up a chat window and presses the cross, and the player who typed the mean message puffs away.">
         </div>
         <p style="margin-top:0.4em"><span class="chip dark">Brain break: Four Corners</span></p>
       </div>
@@ -1873,7 +1873,7 @@ ul.plain li::before { color:var(--p-i-ink); }
     <p class="eyebrow reveal">// notes_for_next_lesson</p>
     <h2 class="reveal">Notes for next lesson</h2>
     <div class="notes-box reveal" id="notesBox" role="textbox" aria-multiline="true" aria-label="Notes for next lesson" data-placeholder="Type what you want next time here. It saves as you type."></div>
-    <p class="small reveal" style="margin-top:var(--element-gap)">Saved on this machine as you type. Press ⌘S to save a copy of the deck with these notes in it.</p>
+    <p class="small reveal" style="margin-top:var(--element-gap)">Saves as you type. With the sync store on it reaches your other machine as well; ⌘S still saves a copy of the deck with these notes in it.</p>
   </div>
 </section>
 
@@ -2030,7 +2030,7 @@ ul.plain li::before { color:var(--p-i-ink); }
    The slides the teacher has hidden persist the same way, under their own version-keyed
    name, so a hide survives a refresh mid-lesson but never outlives a push.
    Everything else (font scale, teacher toggle, iSAMS state, timers) stays session-only. */
-const DECK_VERSION = 'v20260910-100240';
+const DECK_VERSION = 'v20260910-101237';
 
 /* ===========================================
    RUNTIME_STRIP: everything the boot code builds or writes at run time.
@@ -2049,7 +2049,7 @@ const RUNTIME_STRIP = {
                 '#ovGrid', '#ovFan', '#slideNum', '#notesCounter'],
   /* removed outright: the boot code creates these */
   nodes: ['.pic-open', '.timer-dock', '.ringstep-mark',
-           '.chip-rail', '.cfu-panel', '.chip-mark', 'scribe-shadow'],
+           '.chip-rail', '.cfu-panel', '.chip-mark', 'scribe-shadow', '.ds-dot', '.ds-pass'],
   /* attributes written at run time, as [selector, attribute] */
   attrs: [['*', 'data-orig-html'], ['*', 'contenteditable'],
           ['#navPrev', 'disabled'], ['#navNext', 'disabled'],
@@ -2136,7 +2136,7 @@ const NOTES_KEY = 'refdeck-notes';
 /* The Pre and Post List ticks: keyed by the line's own words, never by the deck version, so a push
    never wipes a morning's ticks and a reworded line simply starts unticked. Never baked into an export. */
 const CHECKS_KEY = 'refdeck-checks';
-try { Object.keys(localStorage).forEach(k => { if (k !== EDIT_KEY && k !== HIDDEN_KEY && k !== NOTES_KEY && k !== CHECKS_KEY) localStorage.removeItem(k); }); } catch (e) {}
+try { Object.keys(localStorage).forEach(k => { if (k !== EDIT_KEY && k !== HIDDEN_KEY && k !== NOTES_KEY && k !== CHECKS_KEY && k !== 'deck-sync-pass' && !/:ts$/.test(k)) localStorage.removeItem(k); }); } catch (e) {}
 
 /* ===========================================
    STUDENT SHEET: one template, cloned into every point of use.
@@ -4721,4 +4721,462 @@ window.deck = { presentation: presentation, DECK_VERSION: DECK_VERSION, EDIT_KEY
 </script>
 
 
+<!-- deck-sync:begin -->
+<!-- =====================================================================
+     DECK SYNC, the drop in block. One style, one script, nothing external.
+
+     What it does: the four things a teacher changes in a live deck (the
+     inline edits, the slides hidden from the run, the Pre and Post List
+     ticks and the notes slide) are saved to localStorage by the deck
+     exactly as they always were, and ALSO to the deck's sync store, so the
+     office Mac and the classroom machine see the same deck.
+
+     How it hooks in: it wraps localStorage.setItem, so not one line of the
+     deck's own classes had to change. A write to one of the four keys
+     stamps a timestamp beside it and queues a save about a second and a
+     half later.
+
+     If anything at all goes wrong, and that includes no network, a dead
+     store, a wrong address or a bad reply, the deck behaves exactly as it
+     did before this block existed. The only sign is the little dot at the
+     end of the control pill.
+
+     Set SYNC_URL to '' and the block turns itself off completely.
+     Built 10 September 2026. See INTEGRATION.md beside this file.
+     ===================================================================== -->
+<style>
+/* the dot at the end of the control pill: off, synced, saving, failed */
+.ds-dot { width:11px; height:11px; border-radius:50%; flex:0 0 auto; margin-left:8px;
+  background:#7A8296; box-shadow:inset 0 0 0 1px rgba(0,0,0,.45); cursor:default; }
+.ds-dot.ds-ok   { background:#5DD35D; }
+.ds-dot.ds-busy { background:#F2B33D; }
+.ds-dot.ds-bad  { background:#E5484D; }
+
+/* the passphrase panel: asked once per browser, never with window.prompt */
+.ds-pass { position:fixed; inset:0; z-index:10600; display:flex; align-items:center; justify-content:center;
+  background:rgba(6,9,18,.72); }
+.ds-pass-card { width:min(460px,92vw); background:var(--panel,#151B2E); color:#EEF2FF;
+  padding:22px 24px 20px; box-shadow:inset -3px -3px 0 rgba(0,0,0,.45), inset 3px 3px 0 rgba(255,255,255,.14), 0 18px 50px rgba(0,0,0,.55); }
+.ds-pass-h { font-family:var(--font-label,inherit); font-size:19px; letter-spacing:.12em; margin:0 0 10px;
+  color:var(--p-o,#F2B33D); }
+.ds-pass-msg { margin:0 0 14px; font-size:15px; line-height:1.5; color:#DDE4F5; }
+.ds-pass-msg.ds-warn { color:#FFB3B5; }
+.ds-pass input { width:100%; box-sizing:border-box; font-family:var(--font-label,inherit); font-size:18px;
+  padding:9px 11px; border:0; background:#0C1120; color:#fff; }
+.ds-pass input:focus-visible { outline:2px solid var(--p-i,#6EA8FF); }
+.ds-pass-row { display:flex; gap:9px; margin-top:14px; }
+.ds-pass button { font-family:var(--font-label,inherit); font-size:17px; letter-spacing:.05em; min-height:44px;
+  padding:0 16px; border:0; cursor:pointer; background:#2A3350; color:#fff; }
+.ds-pass button.ds-go { background:var(--p-t,#3C6EF0); }
+.ds-pass button:hover { filter:brightness(1.3); }
+.ds-pass button:focus-visible { outline:2px solid var(--p-i,#6EA8FF); outline-offset:2px; }
+</style>
+<script>
+(function () {
+  'use strict';
+
+  /* ===================================================================
+     THE TWO THINGS THAT CHANGE PER DECK.
+     SYNC_URL is the address of the Apps Script web app. An empty string
+     means sync is off and the deck behaves exactly as it did before.
+     SYNC_SLUG names this deck's file in the store.
+     Everything else works itself out at run time.
+     =================================================================== */
+  var SYNC_URL  = '';
+  var SYNC_SLUG = 'reference-deck';
+
+  var PASS_KEY   = 'deck-sync-pass';   /* one passphrase per browser, not per deck */
+  var TS_SUFFIX  = ':ts';
+  var PUT_DELAY  = 1500;               /* how long we wait for the typing to stop */
+
+  var ls = null;
+  try { ls = window.localStorage; } catch (e) { ls = null; }
+  var origSet = Storage.prototype.setItem;
+  var origRemove = Storage.prototype.removeItem;
+
+  var dot = null, panel = null, panelMsg = null, panelInput = null;
+  var keys = null;                 /* {edits, hidden, notes, checks} */
+  var applying = false;            /* true while we are writing the store's own value back */
+  var armed = false;               /* removeItem only counts once the boot pass is over */
+  var asked = false;               /* the passphrase panel has been turned down this session */
+  var putTimer = null;
+  var pendingApply = [];           /* applies that have to wait for the deck to be calm */
+
+  /* -------------------------------------------------------------------
+     THE DOT
+     Grey off, green synced, amber saving, red failed or waiting for the
+     passphrase. Its title says which, in words.
+     ------------------------------------------------------------------- */
+  function makeDot() {
+    var d = document.createElement('span');
+    d.className = 'ds-dot';
+    d.id = 'dsDot';
+    var home = document.getElementById('fontScaleCtrl') || document.querySelector('.font-scale-ctrl')
+            || document.getElementById('deckNav') || document.querySelector('.deck-nav');
+    if (home) home.appendChild(d);
+    else { d.style.position = 'fixed'; d.style.left = '8px'; d.style.bottom = '8px'; d.style.zIndex = '9600'; document.body.appendChild(d); }
+    return d;
+  }
+  function say(state, text) {
+    if (!dot) return;
+    dot.className = 'ds-dot' + (state ? ' ds-' + state : '');
+    dot.title = text;
+  }
+
+  /* -------------------------------------------------------------------
+     WHICH KEYS THIS DECK USES
+     The store slug and the storage key prefix are different words in the
+     same deck, so the prefix is taken off the deck's own NOTES_KEY. That
+     is what lets a new deck copied from the reference deck change only
+     SYNC_SLUG and still sync the right four things.
+     ------------------------------------------------------------------- */
+  function resolveKeys() {
+    var d = window.deck;
+    if (!d || !d.NOTES_KEY || !d.EDIT_KEY || !d.HIDDEN_KEY || !d.DECK_VERSION) return null;
+    var prefix = String(d.NOTES_KEY).replace(/-notes$/, '');
+    if (!prefix || prefix === d.NOTES_KEY) return null;
+    return { edits: d.EDIT_KEY, hidden: d.HIDDEN_KEY, notes: d.NOTES_KEY, checks: prefix + '-checks',
+             version: d.DECK_VERSION };
+  }
+  function isVersioned(k) { return k === keys.edits || k === keys.hidden; }
+  function keyList() { return [keys.edits, keys.hidden, keys.notes, keys.checks]; }
+
+  /* -------------------------------------------------------------------
+     LOCAL SIDE
+     The value is kept as the exact string localStorage holds. Nothing is
+     parsed and nothing is re-serialised, so a round trip can never change
+     a single character of what the deck wrote.
+     ------------------------------------------------------------------- */
+  function localGet(key) {
+    if (!ls) return null;
+    var raw = null, ts = 0;
+    try { raw = ls.getItem(key); ts = Number(ls.getItem(key + TS_SUFFIX)) || 0; } catch (e) { return null; }
+    if (raw === null) return null;
+    return { data: raw, ts: ts };
+  }
+  function stampTs(key, ts) {
+    if (!ls) return;
+    try { origSet.call(ls, key + TS_SUFFIX, String(ts)); } catch (e) {}
+  }
+  function writeLocal(key, data, ts) {
+    if (!ls) return;
+    applying = true;
+    try {
+      if (data === null) origRemove.call(ls, key);
+      else origSet.call(ls, key, data);
+      origSet.call(ls, key + TS_SUFFIX, String(ts));
+    } catch (e) {} finally { applying = false; }
+  }
+
+  /* -------------------------------------------------------------------
+     THE STORE
+     text/plain on the POST on purpose: the browser then sends it straight
+     out with no preflight, so an Apps Script web app needs no CORS work.
+     ------------------------------------------------------------------- */
+  function storeGetOpen() {
+    return fetch(SYNC_URL + (SYNC_URL.indexOf('?') === -1 ? '?' : '&') + 'slug=' + encodeURIComponent(SYNC_SLUG),
+                 { method: 'GET', redirect: 'follow' }).then(readJson);
+  }
+  function storePost(body) {
+    return fetch(SYNC_URL, { method: 'POST', redirect: 'follow',
+                             headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                             body: JSON.stringify(body) }).then(readJson);
+  }
+  function readJson(r) {
+    if (!r.ok) throw new Error('http ' + r.status);
+    return r.json();
+  }
+  function getPass() { try { return ls ? ls.getItem(PASS_KEY) : null; } catch (e) { return null; } }
+  function setPass(v) { if (!ls) return; applying = true; try { origSet.call(ls, PASS_KEY, v); } catch (e) {} finally { applying = false; } }
+  function clearPass() { if (!ls) return; applying = true; try { origRemove.call(ls, PASS_KEY); } catch (e) {} finally { applying = false; } }
+
+  /* -------------------------------------------------------------------
+     PUTTING WHAT THIS MACHINE HAS
+     ------------------------------------------------------------------- */
+  function queuePut() {
+    clearTimeout(putTimer);
+    putTimer = setTimeout(flushPut, PUT_DELAY);
+    say('busy', 'Deck sync: saving.');
+  }
+  function flushPut() {
+    clearTimeout(putTimer);
+    var pass = getPass();
+    if (!pass) { askPass('Type the sync passphrase so this deck can save what you change. Once per browser.'); return; }
+    var items = {};
+    var any = false;
+    keyList().forEach(function (k) {
+      var lo = localGet(k);
+      if (!lo) return;
+      items[k] = { v: isVersioned(k) ? keys.version : null, ts: lo.ts || Date.now(), data: lo.data };
+      any = true;
+    });
+    if (!any) { say('ok', 'Deck sync: nothing to save.'); return; }
+    say('busy', 'Deck sync: saving.');
+    storePost({ op: 'put', slug: SYNC_SLUG, pass: pass, items: items })
+      .then(function (res) {
+        if (res && res.ok === false && res.error === 'pass') { clearPass(); askPass('That passphrase was not right. Try again.', true); return; }
+        if (!res || !res.ok) throw new Error(res && res.error ? res.error : 'store said no');
+        adopt(res.items || {});
+        say('ok', 'Deck sync: saved to the store.');
+      })
+      .catch(function (err) { say('bad', 'Deck sync: could not save (' + err.message + '). Your work is still on this machine.'); });
+  }
+
+  /* -------------------------------------------------------------------
+     TAKING WHAT THE STORE HAS
+     For each key, whichever side has the newer timestamp wins. A version
+     keyed item is only ever applied when its v is this deck's own
+     DECK_VERSION, so a stale edit can never land on restructured markup.
+     ------------------------------------------------------------------- */
+  function adopt(items) {
+    var needPut = false;
+    /* Every key is settled first and the re-applying happens after, because
+       the edits path can end in a reload and that must never cut the other
+       three off half way. */
+    var after = { hidden: false, notes: null, checks: false, edits: false };
+    keyList().forEach(function (k) {
+      var there = items[k];
+      var here = localGet(k);
+      if (there && isVersioned(k) && there.v !== keys.version) there = null;   /* not for this version of the deck */
+      if (there && typeof there.data !== 'string') there = null;              /* only ever a localStorage string */
+      var theirTs = there ? Number(there.ts) || 0 : -1;
+      var ourTs = here ? (here.ts || 0) : -1;
+
+      /* nothing here and nothing there */
+      if (!there && !here) return;
+
+      /* only the store has it */
+      if (there && !here) { applyKey(k, there.data, theirTs, after); return; }
+
+      /* only this machine has it: push it up, stamping it if it has never been stamped */
+      if (!there && here) {
+        if (!here.ts) stampTs(k, Date.now());
+        needPut = true;
+        return;
+      }
+
+      /* both sides have it and they agree: just settle the clock */
+      if (there.data === here.data) { if (theirTs > ourTs) stampTs(k, theirTs); return; }
+
+      /* an unstamped local value is from before the store existed, so the
+         store, which was deliberately pushed, is the one to believe */
+      if (!here.ts) { applyKey(k, there.data, theirTs, after); return; }
+
+      if (theirTs > ourTs) applyKey(k, there.data, theirTs, after);
+      else needPut = true;
+    });
+    if (needPut) queuePut();
+    if (after.hidden) applyHidden();
+    if (after.notes !== null) applyNotes(after.notes);
+    if (after.checks) applyChecks();
+    if (after.edits) applyEdits();      /* last: this one can end in a reload */
+  }
+
+  function applyKey(key, data, ts, after) {
+    writeLocal(key, data, ts);
+    if (key === keys.hidden) after.hidden = true;
+    else if (key === keys.notes) after.notes = data;
+    else if (key === keys.checks) after.checks = true;
+    else if (key === keys.edits) after.edits = true;
+  }
+
+  function applyHidden() {
+    var p = window.deck && window.deck.presentation;
+    if (!p || !p.restoreHidden) return;
+    try { p.restoreHidden(); p.update(); } catch (e) {}
+  }
+
+  /* Never write over what he is typing right now: if the notes box has the
+     cursor in it, the store's copy waits until he clicks away. */
+  function applyNotes(data) {
+    var box = window.deck && window.deck.notes && window.deck.notes.box;
+    if (!box) return;
+    if (document.activeElement === box) { later(function () { if (document.activeElement !== box) { box.innerHTML = data; return true; } return false; }); return; }
+    try { box.innerHTML = data; } catch (e) {}
+  }
+
+  /* The ticks are read when the Overview builds its cards, so rebuilding
+     the cards is the re-apply. Not while a card is fanned out, though:
+     that would pull the card out from under him. */
+  function applyChecks() {
+    var ov = window.deck && window.deck.overview;
+    if (!ov || !ov.build) return;
+    var go = function () {
+      if (ov.isFanned && ov.isFanned()) return false;
+      try { ov.build(); } catch (e) {}
+      return true;
+    };
+    if (!go()) later(go);
+  }
+
+  /* The inline editor is the one thing the deck does not hand out, and
+     re-implementing its restore from out here would risk addressing the
+     elements differently, which is the exact fault root rule 11 exists to
+     stop. So: the value is in localStorage, and one reload lets the deck's
+     own restoreEdits do the applying. A sessionStorage flag means that
+     reload can happen at most once in this tab, ever. */
+  function applyEdits() {
+    var ed = window.deck && window.deck.editor;
+    if (ed && typeof ed.restoreEdits === 'function') { try { ed.restoreEdits(); return; } catch (e) {} }
+    var flag = 'ds-reload:' + SYNC_SLUG;
+    var seen = null;
+    try { seen = sessionStorage.getItem(flag); } catch (e) { seen = '1'; }
+    if (seen) { say('ok', 'Deck sync: the newer edits are saved here and show on the next reload.'); return; }
+    try { sessionStorage.setItem(flag, '1'); } catch (e) {}
+    location.reload();
+  }
+
+  /* a small waiting room for applies the deck is not ready for yet */
+  function later(fn) {
+    pendingApply.push({ fn: fn, tries: 0 });
+    if (pendingApply.length === 1) setTimeout(drain, 800);
+  }
+  function drain() {
+    pendingApply = pendingApply.filter(function (job) {
+      job.tries++;
+      if (job.tries > 25) return false;
+      return !job.fn();
+    });
+    if (pendingApply.length) setTimeout(drain, 800);
+  }
+
+  /* -------------------------------------------------------------------
+     THE PASSPHRASE PANEL
+     In the deck, in the deck's own clothes. Never window.prompt, and
+     never a loop: a wrong passphrase asks once more and then waits.
+     ------------------------------------------------------------------- */
+  function buildPanel() {
+    var wrap = document.createElement('div');
+    wrap.className = 'ds-pass';
+    wrap.id = 'dsPass';
+    wrap.setAttribute('role', 'dialog');
+    wrap.setAttribute('aria-modal', 'true');
+    wrap.setAttribute('aria-label', 'Deck sync passphrase');
+    var card = document.createElement('div');
+    card.className = 'ds-pass-card';
+    var h = document.createElement('p');
+    h.className = 'ds-pass-h';
+    h.textContent = 'SYNC PASSPHRASE';
+    panelMsg = document.createElement('p');
+    panelMsg.className = 'ds-pass-msg';
+    panelInput = document.createElement('input');
+    panelInput.type = 'password';
+    panelInput.id = 'dsPassInput';
+    panelInput.setAttribute('autocomplete', 'off');
+    panelInput.setAttribute('spellcheck', 'false');
+    var row = document.createElement('div');
+    row.className = 'ds-pass-row';
+    var save = document.createElement('button');
+    save.type = 'button'; save.id = 'dsPassSave'; save.className = 'ds-go'; save.textContent = 'SAVE';
+    var not = document.createElement('button');
+    not.type = 'button'; not.id = 'dsPassNot'; not.textContent = 'NOT NOW';
+    row.appendChild(save); row.appendChild(not);
+    card.appendChild(h); card.appendChild(panelMsg); card.appendChild(panelInput); card.appendChild(row);
+    wrap.appendChild(card);
+
+    save.addEventListener('click', onSave);
+    not.addEventListener('click', onNot);
+    /* The deck listens for plain letter keys on document (E arms edit mode,
+       S opens a picture, and so on). Stopping the event here in the capture
+       phase keeps the passphrase from driving the deck as it is typed. */
+    ['keydown', 'keypress', 'keyup'].forEach(function (t) {
+      wrap.addEventListener(t, function (e) {
+        if (t === 'keydown' && e.key === 'Enter') { e.preventDefault(); onSave(); }
+        if (t === 'keydown' && e.key === 'Escape') { e.preventDefault(); onNot(); }
+        e.stopPropagation();
+      }, true);
+    });
+    document.body.appendChild(wrap);
+    return wrap;
+  }
+  function onSave() {
+    var v = (panelInput.value || '').trim();
+    if (!v) { panelInput.focus(); return; }
+    setPass(v);
+    hidePass();
+    syncNow();                       /* the pass also unlocks the notes, so pull again */
+  }
+  function onNot() {
+    asked = true;                    /* no nagging for the rest of this tab's life */
+    hidePass();
+    say('bad', 'Deck sync: waiting for the passphrase. Everything is still saved on this machine.');
+  }
+  function askPass(message, wrong) {
+    if (asked && !wrong) { say('bad', 'Deck sync: waiting for the passphrase. Everything is still saved on this machine.'); return; }
+    asked = false;
+    if (!panel) panel = buildPanel();
+    panelMsg.textContent = message;
+    panelMsg.className = 'ds-pass-msg' + (wrong ? ' ds-warn' : '');
+    panelInput.value = '';
+    panel.style.display = 'flex';
+    say('bad', 'Deck sync: waiting for the passphrase.');
+    setTimeout(function () { try { panelInput.focus(); } catch (e) {} }, 30);
+  }
+  function hidePass() { if (panel) panel.style.display = 'none'; }
+
+  /* -------------------------------------------------------------------
+     ONE SYNC PASS: ask the store what it has, settle every key, then save
+     anything this machine is ahead on.
+     ------------------------------------------------------------------- */
+  function syncNow() {
+    say('busy', 'Deck sync: checking the store.');
+    var pass = getPass();
+    var ask = pass ? storePost({ op: 'get', slug: SYNC_SLUG, pass: pass }) : storeGetOpen();
+    return ask.then(function (res) {
+      if (res && res.ok === false && res.error === 'pass') { clearPass(); askPass('That passphrase was not right. Try again.', true); return; }
+      if (!res || !res.ok) throw new Error(res && res.error ? res.error : 'store said no');
+      adopt(res.items || {});
+      if (!putTimer) say('ok', 'Deck sync: up to date' + (pass ? '.' : ', notes need the passphrase.'));
+    }).catch(function (err) {
+      say('bad', 'Deck sync: the store could not be reached (' + err.message + '). The deck is working from this machine only.');
+    });
+  }
+
+  /* -------------------------------------------------------------------
+     THE HOOK
+     Wrapping setItem is what keeps this block out of the deck's classes.
+     A write to one of the four keys stamps the clock and queues a save.
+     If localStorage itself throws, the deck's own try/catch sees exactly
+     what it saw before, and nothing here gets in the way.
+     ------------------------------------------------------------------- */
+  function hookStorage() {
+    Storage.prototype.setItem = function (k, v) {
+      var out = origSet.apply(this, arguments);
+      try {
+        if (!applying && this === ls && keyList().indexOf(k) !== -1) { stampTs(k, Date.now()); queuePut(); }
+      } catch (e) {}
+      return out;
+    };
+    Storage.prototype.removeItem = function (k) {
+      var out = origRemove.apply(this, arguments);
+      try {
+        if (armed && !applying && this === ls && keyList().indexOf(k) !== -1) { stampTs(k, Date.now()); queuePut(); }
+      } catch (e) {}
+      return out;
+    };
+  }
+
+  /* -------------------------------------------------------------------
+     BOOT
+     ------------------------------------------------------------------- */
+  function start() {
+    dot = makeDot();
+    if (!SYNC_URL) { say('', 'Deck sync is off: this deck has no store address.'); return; }
+    keys = resolveKeys();
+    if (!keys || !ls) { say('', 'Deck sync is off: this deck does not expose its storage keys.'); return; }
+    hookStorage();
+    /* a last save when the window goes away, so the walk to the classroom
+       never costs him the last sentence he typed */
+    window.addEventListener('pagehide', function () { if (putTimer) flushPut(); });
+    syncNow().then(function () { armed = true; }, function () { armed = true; });
+  }
+
+  /* Everything above is wrapped so a fault in here can never stop the deck. */
+  try {
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function () { try { start(); } catch (e) {} });
+    else start();
+  } catch (e) {}
+})();
+</script>
+<!-- deck-sync:end -->
 </body></html>
