@@ -936,6 +936,13 @@ body.sheet-zoom-open .deck-nav, body.picker-open .deck-nav { display:none; }
 .ov-card.lap { border-left:var(--px) solid var(--p-s); }
 /* a two lap lesson has eight cards: the last card spans two cells so the 3 by 3 grid stays full (Igor, 6 Sep 2026) */
 .ov-card.wide { grid-column:span 2; }
+/* Seven cards, because this lesson's intro row is only the Do Now check and that check
+   sits inside the Do Now card. Three across, then two, then two: a six column grid with
+   the first row spanning two cells a card and the last two rows spanning three, so every
+   row is full and the grid never has a hole in it (The Overview, points 1 and 14). */
+.ov-grid.seven { grid-template-columns:repeat(6, minmax(0, 1fr)); }
+.ov-card.w2 { grid-column:span 2; }
+.ov-card.w3 { grid-column:span 3; }
 /* Card layout, 5 September 2026 (Igor): "the text needs to be in the middle,
    and if there is a photo put the text at the top and the photo in the middle;
    if there is no photo centre the text in the middle of the card."
@@ -986,7 +993,8 @@ body.sheet-zoom-open .deck-nav, body.picker-open .deck-nav { display:none; }
 .ov-line { font-family:var(--font-label); font-size:calc(clamp(0.85rem, min(1.3vw, 1.9vh), 1.7rem) * var(--font-scale));
   line-height:1.25; color:var(--mist); letter-spacing:.02em; }
 .ov-line b { color:var(--p-o); font-weight:400; }
-@media (max-width:1100px) { .ov-grid { grid-template-columns:repeat(2, minmax(0, 1fr)); } }
+@media (max-width:1100px) { .ov-grid, .ov-grid.seven { grid-template-columns:repeat(2, minmax(0, 1fr)); }
+  .ov-card.w2, .ov-card.w3, .ov-card.wide { grid-column:auto; } }
 
 /* ---- THE FAN OUT (Igor, 6 September 2026) ----
    A card tap does not jump straight to a slide any more. The card lifts to the
@@ -2028,7 +2036,7 @@ const RUNTIME_STRIP = {
           ['*', 'data-scribe-recorder-ready']],
   /* classes toggled at run time, as [selector, class] */
   classes: [['.slide', 'visible'], ['.slide', 'active'], ['*', 'fragment-visible'],
-            ['.slide', 'has-chips'],
+            ['.slide', 'has-chips'], ['.ov-grid', 'seven'],
             ['#isamsPop', 'show'], ['#speakerNotes', 'visible'],
             ['#overview', 'open'], ['#overview', 'fanned'], ['*', 'overview-open']],
   /* inline style properties measured at run time, as [selector, property] */
@@ -2075,7 +2083,10 @@ const ELEMENTS = [
   { id: 'entry',   name: 'Entry routine' },
   { id: 'donow',   name: 'Do Now' },
   { id: 'lisc',    name: 'Learning intention and success criteria' },
-  { id: 'intro',   name: 'Last lesson: the warning signs' },
+  /* No intro card. This lesson's intro row is only the Do Now check, and that check now
+     sits inside the Do Now card, so the grid closes up to seven (deck law, The opening
+     slides, point 7). A lesson that really does teach something new here puts the row
+     back as   { id: 'intro', name: '<what the teach is>' },   right on this line. */
   { id: 'lap1',    name: 'Saying No to Cyberbullying: the role play', lap: true,
     cfu: 'Name one move you make when someone is mean to you online, and say why.',
     sc: 'Success Criteria 2 and 3: explain what to do, and manage your chat',
@@ -2088,9 +2099,11 @@ const ELEMENTS = [
     sc: 'Success Criteria 1: identify a problem and pick the right tool',
     brainBreak: 'Bang Circle' },
   { id: 'reflect', name: 'Reflection and exit' }
-  /* Two laps, so eight cards: the last one spans two cells and the three by three
-     grid stays full (deck law, The Overview). There is no Lap 3 in this lesson.
-     Notes for next lesson is the last slide of the Reflection and exit card. */
+  /* Two laps and no intro row, so SEVEN cards: three across, then two, then two, on a
+     six column grid, which fills every row (deck law, The Overview, points 1 and 14).
+     Eight cards still span the last one across two cells of the three by three grid.
+     There is no Lesson 3 in this lesson, and Notes for next lesson is the last slide of
+     the Reflection and exit card. */
 ];
 
 const EDIT_KEY = 'refdeck-edits:' + DECK_VERSION;
@@ -3693,10 +3706,17 @@ class DeckOverview {
       this.grid.appendChild(b);
       this.cards.push(entry);
     });
-    /* nine cells: with a third lap the grid is full; with two laps the last card spans two cells */
+    /* The grid is always full, and it never scrolls. Nine cards fill the three by three
+       exactly; eight span the last card across two cells; seven drop to a six column grid
+       laid out three, two, two, which is the shape a lesson with no intro row makes. */
     const all = Array.from(this.grid.querySelectorAll('.ov-card'));
-    all.forEach(c => c.classList.remove('wide'));
+    all.forEach(c => c.classList.remove('wide', 'w2', 'w3'));
+    this.grid.classList.remove('seven');
     if (all.length === 8) all[all.length - 1].classList.add('wide');
+    if (all.length === 7) {
+      this.grid.classList.add('seven');
+      all.forEach((c, i) => c.classList.add(i < 3 ? 'w2' : 'w3'));
+    }
     this.refresh();
   }
   prepCard(el) {
