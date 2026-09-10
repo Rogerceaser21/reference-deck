@@ -466,6 +466,15 @@ ul.plain li::before { content:"\25B8  "; color:var(--p-i); font-weight:800; }
    the right of the slide, on purpose, because that is where the question has to be
    big enough to read from the back of the room.
    =========================================== */
+/* A Lesson card's picture on the plan slide. It is sized by its own caps rather
+   than by fitPictures, so the two cards always come out the same height and the
+   slide reads as a plan rather than as two different pictures. Both caps keep the
+   picture's own shape: nothing is cropped and nothing is letterboxed. It still opens
+   full screen from a tap, from its See it big button and from the S key. */
+.picfig.plan-pic { width:100%; margin-top:calc(var(--element-gap) * 0.4); }
+.picfig.plan-pic > img { display:block; width:auto; height:auto;
+  max-width:100%; max-height:clamp(110px, 24vh, 320px); object-fit:contain; cursor:zoom-in; }
+
 .slide.has-chips .slide-content { padding-right:max(var(--slide-padding), calc(var(--chip-gutter, 64px) + 10px)); }
 .chip-rail { position:absolute; right:0; top:50%; transform:translateY(-50%); z-index:8;
   display:flex; flex-direction:column; align-items:flex-end; gap:10px; }
@@ -1337,28 +1346,29 @@ ul.plain li::before { color:var(--p-i-ink); }
   </div>
 </section>
 
-<!-- 2 · Today's two laps: the plan on screen · iSAMS ANCHOR (the one register, final by 14:05) -->
+<!-- 2 · What are we doing today? the plan on screen · iSAMS ANCHOR (the one register, final by 14:05) -->
 <section data-element="entry" class="slide g-panel" data-isams="14:05" data-notes="&lt;strong&gt;Housekeeping, 14:00 to 14:05.&lt;/strong&gt; Read the two lap names out loud, then say what each lap ends with. &lt;strong&gt;The iSAMS pop-up lands here and follows every slide until you press ✓ done. One register for the whole lesson, final by 14:05.&lt;/strong&gt; Open iSAMS from the link inside the pop-up. Period 9 carries no second register. &lt;strong&gt;Say it plainly: Lap 1 is a role play and every line in it is written for you.&lt;/strong&gt;">
   <div class="slide-content" style="max-width:min(96vw,2400px)">
     <p class="eyebrow reveal">// today</p>
-    <h2 class="reveal" style="margin-bottom:calc(var(--element-gap) * 0.6)">Today's two laps</h2>
+    <h2 class="reveal" style="margin-bottom:calc(var(--element-gap) * 0.6)">What are we doing today?</h2>
     <div class="grid" style="grid-template-columns:repeat(2, minmax(0,1fr)); gap:clamp(8px,1.1vw,18px)">
       <div class="tblock s reveal">
-        <p class="lede" style="color:var(--p-s-ink)">Lap 1 · about 30 minutes</p>
+        <p class="lede" style="color:var(--p-s-ink)">Lesson 1</p>
         <p style="margin-top:0.3em"><b>Saying No to Cyberbullying: the role play.</b></p>
-        <p style="margin-top:0.3em">Check: name one move you make when someone is mean to you online, and say why.</p>
-        <p style="margin-top:0.3em">Success Criteria 2 and 3.</p>
-        <p style="margin-top:0.3em">Brain break: Four Corners.</p>
+        <div class="picfig plan-pic">
+          <img class="photo" src="assets/mce-remove-player.png" alt="The Permission Options dialog in Minecraft Education, showing a permissions level dropdown set to Operator and a Remove Player button underneath">
+        </div>
+        <p style="margin-top:0.4em"><span class="chip dark">Brain break: Four Corners</span></p>
       </div>
       <div class="tblock i reveal">
-        <p class="lede" style="color:var(--p-i-ink)">Lap 2 · about 17 minutes</p>
+        <p class="lede" style="color:var(--p-i-ink)">Lesson 2</p>
         <p style="margin-top:0.3em"><b>Good Game.</b></p>
-        <p style="margin-top:0.3em">Check: name one problem you met in Good Game, and which tool you chose.</p>
-        <p style="margin-top:0.3em">Success Criteria 1.</p>
-        <p style="margin-top:0.3em">Brain break: Bang Circle.</p>
+        <div class="picfig plan-pic">
+          <img class="photo" src="assets/good-game-0.jpg" alt="Two characters in the Good Game world beside a gaming setup, with a chat bubble above them">
+        </div>
+        <p style="margin-top:0.4em"><span class="chip dark">Brain break: Bang Circle</span></p>
       </div>
     </div>
-    <p class="reveal" style="margin-top:calc(var(--element-gap) * 0.6)"><span class="chip dark">Key digital skills focus: touch typing, spotting online problems, safe chat habits</span></p>
     <p class="small reveal" style="margin-top:calc(var(--element-gap) * 0.5)">Press the Overview button at the bottom left at any time to see this plan again.</p>
   </div>
 </section>
@@ -2689,6 +2699,7 @@ function fitPictures() {
 
   Array.from(document.querySelectorAll('.picfig, .sheet-fig')).forEach(fig => {
     if (fig.closest('#ovFan')) return;    /* a fan out tile is a copy, never measured */
+    if (fig.classList.contains('plan-pic')) return;   /* the plan slide's cards size their own */
     const content = fig.closest('.slide-content');
     if (!content) return;
     const room = picRoom(content);
