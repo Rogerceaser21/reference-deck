@@ -2244,6 +2244,29 @@ function syncRingSteps() {
     slot.dataset.ringAt = want;
   });
 }
+/* Put a slide's walk AT step k, exactly where pressing NEXT (or BACK) on the slide would
+   have left it: every fragment up to that step's marker is out and everything after it is
+   away. The full screen sheet steps the walk through this one function, so the ring the
+   class is looking at big and the ring the deck is holding can never be two different
+   things. Returns that step's own data-rings spec, or null when the slide has no walk. */
+function setRingStep(slide, k) {
+  const slot = slide && slide.querySelector('.sheet-slot[data-ring-steps]');
+  const steps = slot && ringStepsOf(slot);
+  if (!steps) return null;
+  const marks = Array.from(slide.querySelectorAll('.ringstep-mark'))
+    .sort((a, b) => parseInt(a.dataset.fragment, 10) - parseInt(b.dataset.fragment, 10));
+  const want = Math.max(0, Math.min(k, marks.length));
+  /* step one owns no marker of its own, so its cut is one below the first marker */
+  const cut = want ? parseInt(marks[want - 1].dataset.fragment, 10)
+                   : (marks.length ? parseInt(marks[0].dataset.fragment, 10) - 1 : 0);
+  slide.querySelectorAll('[data-fragment]').forEach(el => {
+    const n = parseInt(el.dataset.fragment, 10);
+    if (!isFinite(n)) return;
+    el.classList.toggle('fragment-visible', n <= cut);
+  });
+  syncFragments();
+  return steps[Math.min(want, steps.length - 1)];
+}
 /* ===========================================
    THE CFU AND QUESTION CHIPS
    A slide declares its check in data-cfu and its one must-not-forget question in
@@ -2639,6 +2662,15 @@ function sheetZoomOpen() { return document.body.classList.contains('sheet-zoom-o
 function pickerOpen() { return document.body.classList.contains('picker-open'); }
 function navBlocked() { return sheetZoomOpen() || pickerOpen(); }
 
+/* The one thing that still moves while the full screen sheet is up: a sheet that walks its
+   rings (deck law, The opening slides, point 8). navBlocked() itself is untouched, so edit
+   mode, the E key, the H key, the O key, the wheel and the Overview's scroll guard all
+   still stand down behind the pop-up, and the Random Name Picker still freezes everything.
+   Only NEXT and BACK are let through, and they step the ring rather than the deck. */
+let sheetLightbox = null;
+function sheetWalkOpen() { return !!(sheetLightbox && sheetLightbox.walkable()); }
+function sheetWalk(dir) { return !!(sheetLightbox && sheetLightbox.walkRings(dir)); }
+
 /* True while the Overview is up. It is a VIEW, not an overlay that freezes the
    deck: the bar, the dots and the timer all stay live underneath, and the only
    thing this changes is that a move (NEXT, BACK, an arrow key, a nav dot) opens
@@ -2717,6 +2749,7 @@ class SlidePresentation {
      one element per press version did. */
   fragNum(el) { return parseInt(el.dataset.fragment, 10); }
   next() {
+    if (sheetWalk(1)) return;    /* the full screen sheet is walking its own rings */
     if (overviewOpen()) { deckOverview.close(); return; }
     const frags = this.getFragments();
     const hidden = frags.filter(f => !f.classList.contains('fragment-visible'));
@@ -2729,6 +2762,7 @@ class SlidePresentation {
     if (nx !== null) this.goTo(nx);
   }
   prev() {
+    if (sheetWalk(-1)) return;   /* and BACK walks it the other way */
     if (overviewOpen()) { deckOverview.close(); return; }
     const frags = this.getFragments();
     const shown = frags.filter(f => f.classList.contains('fragment-visible'));
@@ -2841,10 +2875,14 @@ class SlidePresentation {
       setTimeout(() => wheelLock = false, 450);
       if (e.deltaY > 12) this.next(); else if (e.deltaY < -12) this.prev();
     }, { passive: true });
+    /* A swipe is a NEXT or a BACK like any other, so it reaches the walk inside the full
+       screen sheet too. Everything else an overlay owns stays frozen, the wheel included:
+       a stray trackpad scroll is not a press. */
+    const frozen = () => (navBlocked() && !sheetWalkOpen()) || overviewOpen();
     let touchY = null;
-    window.addEventListener('touchstart', (e) => { touchY = (navBlocked() || overviewOpen()) ? null : e.touches[0].clientY; }, { passive: true });
+    window.addEventListener('touchstart', (e) => { touchY = frozen() ? null : e.touches[0].clientY; }, { passive: true });
     window.addEventListener('touchend', (e) => {
-      if (touchY === null || navBlocked() || overviewOpen()) { touchY = null; return; }
+      if (touchY === null || frozen()) { touchY = null; return; }
       const dy = touchY - e.changedTouches[0].clientY;
       if (Math.abs(dy) > 50) { dy > 0 ? this.next() : this.prev(); }
       touchY = null;
@@ -3462,14 +3500,18 @@ class PictureLightbox {
     this.nextBtn = document.getElementById('sheetZoomNext');
     this.hint  = document.getElementById('sheetZoomHint');
     this.opener = null;
+    this.fig = null;
     this.list = [];
     this.idx = 0;
     if (!this.wrap) return;
     document.getElementById('sheetZoomClose').addEventListener('click', () => this.close());
     this.wrap.addEventListener('click', () => this.close());
     this.inner.addEventListener('click', () => this.close());
-    this.prevBtn.addEventListener('click', (e) => { e.stopPropagation(); this.step(-1); });
-    this.nextBtn.addEventListener('click', (e) => { e.stopPropagation(); this.step(1); });
+    /* On a sheet that walks its rings these two are the walk's own BACK and NEXT, which
+       is the no clicker path while the pop-up is up. On any other picture they step
+       through the slide's pictures, exactly as they always did. */
+    this.prevBtn.addEventListener('click', (e) => { e.stopPropagation(); if (this.walkable()) this.walkRings(-1); else this.step(-1); });
+    this.nextBtn.addEventListener('click', (e) => { e.stopPropagation(); if (this.walkable()) this.walkRings(1); else this.step(1); });
 
     /* Every way in is a labelled button or the picture itself. Both are guarded
        against edit mode, so a tap while the pencil is armed edits the slide and
@@ -3484,9 +3526,20 @@ class PictureLightbox {
     });
 
     const NAVKEYS = ['ArrowUp','ArrowDown','PageUp','PageDown',' ','Home','End'];
+    const WALK_FWD = ['ArrowRight','ArrowDown','PageDown',' '];
+    const WALK_BACK = ['ArrowLeft','ArrowUp','PageUp'];
     document.addEventListener('keydown', (e) => {
       if (e.target.isContentEditable || ['INPUT','TEXTAREA','IFRAME'].includes(e.target.tagName)) return;
       if (this.isOpen()) {
+        /* A sheet that walks its rings owns NEXT and BACK while it is up: the arrow keys,
+           the clicker's space and page keys all step the ring, and the press after the
+           last ring closes the sheet and moves nothing else. The deck's own key handler
+           has already stood down on navBlocked(), so nothing moves underneath. */
+        if (this.walkable() && (WALK_FWD.includes(e.key) || WALK_BACK.includes(e.key))) {
+          e.preventDefault();
+          this.walkRings(WALK_FWD.includes(e.key) ? 1 : -1);
+          return;
+        }
         if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
           e.preventDefault();
           /* several pictures on this slide: the arrows walk them. One picture:
@@ -3526,6 +3579,54 @@ class PictureLightbox {
     if (this.list.length < 2) return;
     this.idx = (this.idx + d + this.list.length) % this.list.length;
     this.paint(this.list[this.idx]);
+    this.syncWalkChrome();
+  }
+  /* THE WALK INSIDE THE FULL SCREEN SHEET (deck law, The opening slides, point 8; Igor,
+     10 Sep 2026, "I can't cycle through these when the Student sheet is in full screen").
+     The pop-up shows a COPY of the slide's sheet, so one press does two things: it moves
+     the deck's real fragment step, which redraws the sheet on the slide underneath, and it
+     redraws the copy from that same step's spec. What the class sees big and what the deck
+     is holding are therefore never two different rings. */
+  walkSlot() {
+    const fig = this.isOpen() ? this.fig : null;
+    if (!fig || !fig.matches || !fig.matches('.sheet-slot[data-ring-steps]')) return null;
+    return ringStepsOf(fig) ? fig : null;
+  }
+  walkable() { return !!this.walkSlot(); }
+  /* Returns true whenever it dealt with the press, so the caller stops there and the deck
+     never moves behind the sheet. */
+  walkRings(dir) {
+    const slot = this.walkSlot();
+    if (!slot) {
+      /* a sheet with plain rings, or any other picture: NEXT simply closes it */
+      if (!this.isOpen()) return false;
+      this.close();
+      return true;
+    }
+    const slide = slot.closest('.slide');
+    const steps = ringStepsOf(slot);
+    const to = ringStepAt(slide) + (dir > 0 ? 1 : -1);
+    /* NEXT past the last ring, or BACK before the first, closes the sheet and leaves the
+       deck exactly where it is: no slide change and no chip. The next press after that is
+       an ordinary press on the slide. */
+    if (to < 0 || to > steps.length - 1) { this.close(); return true; }
+    renderRings(this.inner, setRingStep(slide, to) || '');
+    this.syncWalkChrome();
+    if (deckNav && deckNav.nextBtn) deckNav.refresh();
+    return true;
+  }
+  /* The two edge buttons and the hint line, in one place: the walk's BACK and NEXT on a
+     sheet that walks, the picture stepper on anything else. */
+  syncWalkChrome() {
+    const walk = this.walkable();
+    const many = this.list.length > 1;
+    this.prevBtn.classList.toggle('show', walk || many);
+    this.nextBtn.classList.toggle('show', walk || many);
+    if (!this.hint) return;
+    this.hint.textContent = walk
+      ? 'next and back walk the rings \u00b7 one more next closes the sheet \u00b7 Esc closes it now'
+      : (many ? 'left and right step through this slide\u2019s pictures \u00b7 Esc or click anywhere to close'
+              : 'Esc, click anywhere, or press S to close');
   }
   /* The sheet travels in whole, rings and wash and all, so the box Igor is
      pointing at is still ringed full screen. Any other picture goes in as the
@@ -3550,6 +3651,7 @@ class PictureLightbox {
       this.inner.appendChild(clone);
     }
     this.opener = fig.querySelector('.pic-open') || null;
+    this.fig = fig;            /* what is actually on the wall, which the walk asks for */
   }
   open(fig) {
     if (!fig) return;
@@ -3557,20 +3659,16 @@ class PictureLightbox {
     this.list = this.picsOn(slide);
     this.idx = Math.max(0, this.list.indexOf(fig));
     this.paint(fig);
-    const many = this.list.length > 1;
-    this.prevBtn.classList.toggle('show', many);
-    this.nextBtn.classList.toggle('show', many);
-    if (this.hint) this.hint.textContent = many
-      ? 'left and right step through this slide\u2019s pictures \u00b7 Esc or click anywhere to close'
-      : 'Esc, click anywhere, or press S to close';
     document.body.classList.add('sheet-zoom-open');
     this.wrap.classList.add('open');
+    this.syncWalkChrome();     /* the edge buttons and the hint: walk, pictures or neither */
     document.getElementById('sheetZoomClose').focus();
   }
   close() {
     if (!this.isOpen()) return;
     this.wrap.classList.remove('open');
     document.body.classList.remove('sheet-zoom-open');
+    this.fig = null;
     this.inner.innerHTML = '';
     this.inner.classList.remove('plain');
     this.prevBtn.classList.remove('show');
@@ -4604,7 +4702,7 @@ new FontScaleController();
 new FullscreenController();
 new TeacherToggle();
 new CursorEffects();
-new PictureLightbox(presentation);
+sheetLightbox = new PictureLightbox(presentation);
 const coldCall = new ColdCallPicker();
 const deckNav = new DeckNav(presentation, coldCall);
 const editor = new InlineEditor(presentation);
@@ -4683,7 +4781,8 @@ window.deck = { presentation: presentation, DECK_VERSION: DECK_VERSION, EDIT_KEY
                 overview: deckOverview, ELEMENTS: ELEMENTS, timer: slideTimer,
                 notes: nextLessonNotes, NOTES_KEY: NOTES_KEY,
                 RUNTIME_STRIP: RUNTIME_STRIP, exportHTML: () => editor.serialise(),
-                chipsOf: chipsOf, syncFragments: syncFragments, ringStepAt: ringStepAt };
+                chipsOf: chipsOf, syncFragments: syncFragments, ringStepAt: ringStepAt,
+                lightbox: sheetLightbox, setRingStep: setRingStep };
 </script>
 <script>
 /* The presenter key hint lives in the bottom chrome band, to the left of the slide
