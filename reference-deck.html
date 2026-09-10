@@ -527,7 +527,33 @@ body.hide-teacher [data-teacher-only="true"] { display:none; }
 /* ===========================================
    COUNTDOWN TIMER PILL
    =========================================== */
-.timer-pill { position:fixed; left:clamp(10px,2vw,26px); top:clamp(10px,3vh,26px); z-index:9500;
+/* The pill and its gear share one dock, so the gear always sits beside the clock
+   whatever the clock says, and the whole thing lives in the top gutter the slides
+   already leave for it. Chrome pays for its own room; no picture and no type pays
+   for the gear (presenter kit, the chrome rule). */
+.timer-dock { position:fixed; left:clamp(10px,2vw,26px); top:clamp(10px,3vh,26px); z-index:9500;
+  display:none; align-items:flex-start; gap:8px; }
+.timer-dock.show { display:inline-flex; }
+.timer-gear { flex:none; min-width:44px; min-height:44px; display:inline-flex;
+  align-items:center; justify-content:center; cursor:pointer; border:0;
+  background:var(--panel); color:var(--p-o); font-size:1.35rem; line-height:1;
+  box-shadow:inset calc(var(--px) * -1) calc(var(--px) * -1) 0 rgba(0,0,0,.45), inset var(--px) var(--px) 0 rgba(255,255,255,.12), 0 8px 30px rgba(0,0,0,.4); }
+.timer-gear:hover { filter:brightness(1.15); }
+.timer-gear:focus-visible { outline:3px solid var(--p-o); outline-offset:3px; }
+.timer-set { position:absolute; left:0; top:calc(100% + 10px); z-index:9600; display:none;
+  flex-direction:column; gap:8px; padding:10px; background:var(--panel);
+  box-shadow:inset calc(var(--px) * -1) calc(var(--px) * -1) 0 rgba(0,0,0,.45), inset var(--px) var(--px) 0 rgba(255,255,255,.12), 0 10px 34px rgba(0,0,0,.5); }
+.timer-set.open { display:flex; }
+.ts-row { display:flex; align-items:center; gap:8px; }
+.ts-cap { font-family:var(--font-label); font-size:1.15rem; color:var(--mist); }
+.timer-set button { min-width:44px; min-height:44px; padding:0 0.6em; cursor:pointer; border:0;
+  font-family:var(--font-label); font-size:1.3rem; background:var(--panel-2); color:#F2F5FF;
+  box-shadow:inset calc(var(--px) * -1) calc(var(--px) * -1) 0 rgba(0,0,0,.45), inset var(--px) var(--px) 0 rgba(255,255,255,.12); }
+.timer-set button:hover { filter:brightness(1.15); }
+.timer-set button.ts-go { background:var(--p-o); color:var(--edge); }
+.ts-min { width:5.5ch; min-height:44px; text-align:center; border:0; background:#151A22; color:#F2F5FF;
+  font-family:var(--font-label); font-size:1.6rem; box-shadow:inset var(--px) var(--px) 0 rgba(0,0,0,.6); }
+.timer-pill { position:relative; z-index:1;
   display:none; align-items:center; gap:0.5em; background:var(--panel); color:var(--p-i);
   font-family:var(--font-label); font-size:calc(clamp(1.4rem,2.5vw,2.05rem) * var(--font-scale));
   padding:0.28em 0.68em; cursor:pointer; border:0;
@@ -1118,6 +1144,10 @@ ul.plain li::before { color:var(--p-i-ink); }
 .fs-btn:hover { background:#D8CBAB; }
 .ctrl-divider { background:rgba(0,0,0,.22); }
 .edit-toggle { background:var(--panel); color:var(--ink); }
+.timer-gear { background:var(--panel); color:var(--p-o-ink); }
+.timer-set { background:var(--panel); }
+.timer-set button { background:var(--panel-2); color:#F2F5FF; }
+.timer-set button.ts-go { background:var(--p-o); color:var(--edge); }
 .timer-pill { background:var(--panel); color:var(--p-i-ink);
   box-shadow:inset calc(var(--px) * -1) calc(var(--px) * -1) 0 rgba(0,0,0,.16),
              inset var(--px) var(--px) 0 rgba(255,255,255,.9), 0 8px 26px rgba(0,0,0,.2); }
@@ -2108,7 +2138,7 @@ const RUNTIME_STRIP = {
   containers: ['.sheet-slot', '.nav-dots', '#pkQueue', '#pkRoster', '#pkNote', '#notesBody',
                 '#ovGrid', '#ovFan', '#slideNum', '#notesCounter'],
   /* removed outright: the boot code creates these */
-  nodes: ['.pic-open', '.timer-pill', '.ringstep-mark', 'scribe-shadow'],
+  nodes: ['.pic-open', '.timer-dock', '.ringstep-mark', 'scribe-shadow'],
   /* attributes written at run time, as [selector, attribute] */
   attrs: [['*', 'data-orig-html'], ['*', 'contenteditable'],
           ['#navPrev', 'disabled'], ['#navNext', 'disabled'],
@@ -2878,9 +2908,14 @@ class SlideTimer {
   constructor(presentation) {
     this.presentation = presentation;
     this.pill = document.createElement('button');
+    this.pill.type = 'button';
     this.pill.className = 'timer-pill';
     this.pill.setAttribute('aria-label', 'Countdown timer: click to start or pause, double-click to reset');
-    document.body.appendChild(this.pill);
+    this.dock = document.createElement('div');
+    this.dock.className = 'timer-dock';
+    this.dock.appendChild(this.pill);
+    this.buildGear();
+    document.body.appendChild(this.dock);
     this.beat = null;         /* the redraw interval, nothing is counted on it */
     this.deadline = null;     /* the moment on the clock this timer runs out */
     this.remaining = 0;       /* seconds left, kept while it is paused */
@@ -2929,10 +2964,101 @@ class SlideTimer {
         this.resetTo(secs);
       }
       this.pill.classList.add('show');
+      this.dock.classList.add('show');
     } else {
       this.slide = null; this.group = null;
       this.pill.classList.remove('show');
+      this.dock.classList.remove('show');
+      this.closeGear();
     }
+  }
+
+  /* ---- THE GEAR ----
+     Igor, 10 September 2026: "add a little setting button to allow me to click/tap
+     on it so I can adjust the amount of time on the clock". A real button, finger
+     sized, in the top gutter beside the pill, and never inside the inline editor's
+     selector, so a tap on it can never put the projector into edit mode. Minus one
+     minute and plus one minute move the clock straight away, because mid-lesson
+     that is one tap; the field plus Set puts an exact number of minutes on it.
+     Whatever it does is session only: the slide's own data-timer is untouched, so
+     the next load is back to the lesson plan's time. */
+  buildGear() {
+    this.gear = document.createElement('button');
+    this.gear.type = 'button';
+    this.gear.className = 'timer-gear';
+    this.gear.innerHTML = '\u2699';
+    this.gear.setAttribute('aria-label', 'Adjust the time on the clock');
+    this.gear.setAttribute('aria-expanded', 'false');
+    this.panel = document.createElement('div');
+    this.panel.className = 'timer-set';
+    this.panel.setAttribute('role', 'dialog');
+    this.panel.setAttribute('aria-label', 'Adjust the time on the clock');
+    const row1 = document.createElement('div'); row1.className = 'ts-row';
+    const minus = document.createElement('button'); minus.type = 'button';
+    minus.textContent = '\u2212 1 min'; minus.setAttribute('aria-label', 'One minute less');
+    const plus = document.createElement('button'); plus.type = 'button';
+    plus.textContent = '+ 1 min'; plus.setAttribute('aria-label', 'One minute more');
+    row1.appendChild(minus); row1.appendChild(plus);
+    const row2 = document.createElement('div'); row2.className = 'ts-row';
+    this.field = document.createElement('input');
+    this.field.type = 'number'; this.field.className = 'ts-min';
+    this.field.min = '0'; this.field.max = '99'; this.field.step = '1';
+    this.field.setAttribute('aria-label', 'Minutes on the clock');
+    const cap = document.createElement('span'); cap.className = 'ts-cap'; cap.textContent = 'min';
+    const set = document.createElement('button'); set.type = 'button';
+    set.className = 'ts-go'; set.textContent = 'Set';
+    row2.appendChild(this.field); row2.appendChild(cap); row2.appendChild(set);
+    const row3 = document.createElement('div'); row3.className = 'ts-row';
+    const close = document.createElement('button'); close.type = 'button';
+    close.textContent = 'Close';
+    row3.appendChild(close);
+    this.panel.appendChild(row1); this.panel.appendChild(row2); this.panel.appendChild(row3);
+    this.dock.appendChild(this.gear);
+    this.dock.appendChild(this.panel);
+    /* A pointer click leaves focus on the button, and a focused button eats the next
+       space bar the clicker sends, so blur after a click exactly as DeckNav does. */
+    const tap = (btn, fn) => btn.addEventListener('click', (e) => { if (e.detail > 0) btn.blur(); fn(); });
+    tap(this.gear, () => this.toggleGear());
+    tap(minus, () => this.nudge(-60));
+    tap(plus, () => this.nudge(60));
+    tap(set, () => { this.setLeft(parseFloat(this.field.value) * 60); this.closeGear(); });
+    tap(close, () => this.closeGear());
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && this.gearOpen()) { e.preventDefault(); this.closeGear(); }
+    });
+    document.addEventListener('pointerdown', (e) => {
+      if (!this.gearOpen()) return;
+      if (this.panel.contains(e.target) || this.gear.contains(e.target)) return;
+      this.closeGear();
+    });
+  }
+  gearOpen() { return !!this.panel && this.panel.classList.contains('open'); }
+  toggleGear() { this.gearOpen() ? this.closeGear() : this.openGear(); }
+  openGear() {
+    if (!this.slide) return;
+    this.syncField();
+    this.panel.classList.add('open');
+    this.gear.setAttribute('aria-expanded', 'true');
+  }
+  closeGear() {
+    if (!this.panel) return;
+    this.panel.classList.remove('open');
+    this.gear.setAttribute('aria-expanded', 'false');
+  }
+  syncField() { if (this.field) this.field.value = String(Math.max(0, Math.round(this.left() / 60))); }
+  nudge(delta) { this.setLeft(this.left() + delta); }
+  /* The one place the clock is moved by hand. Running, the deadline moves with it;
+     paused, what is left moves. Either way the group's banked deadline follows,
+     because apply() banks this.deadline when the lesson leaves a grouped slide. */
+  setLeft(secs) {
+    if (!this.slide) return;
+    if (!isFinite(secs)) return;
+    secs = Math.max(0, Math.min(99 * 60, Math.round(secs)));
+    if (this.isRunning()) { this.deadline = Date.now() + secs * 1000; this.remaining = secs; }
+    else { this.remaining = secs; }
+    if (this.group) this.groups[this.group] = { deadline: this.deadline, remaining: this.left() };
+    this.render();
+    this.syncField();
   }
   resetTo(secs) {
     this.stop();
