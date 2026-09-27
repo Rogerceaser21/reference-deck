@@ -337,6 +337,41 @@ ul.plain li { background:var(--panel); padding:0.4em 0.85em; font-size:var(--bod
   box-shadow:inset calc(var(--px) * -1) calc(var(--px) * -1) 0 rgba(0,0,0,.45), inset var(--px) var(--px) 0 rgba(255,255,255,.12); }
 ul.plain li::before { content:"\25B8  "; color:var(--p-i); font-weight:800; }
 
+/* ===========================================
+   TURN AND TALK: partner and first speaker controls
+   The two live lines (.tt-row) are boot-built, exactly like a CFU chip: their
+   content is never in the inline editor's reach (excluded in editableIn()) and
+   never survives a Cmd+S export (RUNTIME_STRIP.containers wipes them, and the
+   next boot redraws the deck's own default from data-tt-partner/data-tt-first).
+   The controls stay small and out of the reading path, the same quiet grey the
+   chip tabs use, full opacity only on hover or focus. =========================================== */
+.tt-row { position:relative; display:flex; flex-wrap:wrap; align-items:baseline; column-gap:0.6em; row-gap:0.3em; }
+.tt-ctl { font-family:var(--font-label); font-size:0.56em; letter-spacing:.02em; line-height:1.3;
+  background:#3A3F49; color:#9AA3B2; border:0; padding:0.22em 0.65em; cursor:pointer; min-height:32px;
+  box-shadow:inset calc(var(--px) * -1) calc(var(--px) * -1) 0 rgba(0,0,0,.45), inset var(--px) var(--px) 0 rgba(255,255,255,.10);
+  transition:opacity .2s ease, background-color .2s ease, color .2s ease; opacity:.78; flex:none; }
+.tt-ctl:hover { opacity:1; filter:brightness(1.1); }
+.tt-ctl:focus-visible { outline:3px solid var(--p-o); outline-offset:2px; opacity:1; }
+button.tt-first-line { display:inline; text-align:left; font:inherit; font-size:1em; letter-spacing:normal;
+  background:transparent; color:inherit; box-shadow:none; border:0; padding:0; margin:0; cursor:pointer;
+  min-height:0; opacity:1; flex:1 1 auto; }
+button.tt-first-line:hover, button.tt-first-line:focus-visible { text-decoration:underline; filter:none; outline:0; }
+/* Fixed and centred, never a dropdown off the row: .slide and .slide-content both
+   clip overflow, and the first speaker row can sit anywhere down the list, so an
+   anchored dropdown would go under the slide's own edge on a full ten-item list.
+   A small centred card, backdrop-dismissed exactly like the picker and the sheet
+   lightbox, is reachable from every row position at both 1512x982 and 3440x1440. */
+.tt-rulelist { position:fixed; inset:0; z-index:9000; display:none; align-items:flex-start;
+  justify-content:center; padding:8vh 16px 16px; background:rgba(5,7,14,.6); }
+.tt-rulelist.open { display:flex; }
+.tt-rule-card { background:var(--panel); padding:0.4em; display:flex; flex-direction:column; gap:2px;
+  max-height:78vh; overflow:auto; width:min(92vw, 640px);
+  box-shadow:inset calc(var(--px) * -1) calc(var(--px) * -1) 0 rgba(0,0,0,.5), inset var(--px) var(--px) 0 rgba(255,255,255,.12), 0 16px 50px rgba(0,0,0,.55); }
+.tt-rule-opt { text-align:left; background:transparent; color:#F2F5FF; border:0; padding:0.55em 0.7em;
+  font-family:var(--font-label); font-size:1rem; line-height:1.35; cursor:pointer; }
+.tt-rule-opt:hover, .tt-rule-opt:focus-visible { background:var(--p-i); outline:0; }
+.tt-rule-opt.active { background:var(--p-o); color:var(--ink); }
+
 .two-col { display:grid; grid-template-columns:1fr auto; gap:clamp(0.9rem,2.6vw,2.2rem); align-items:center; }
 .two-col.img-left { grid-template-columns:auto 1fr; }
 /* The text column takes whatever the thumbnail leaves, up to a sane reading width. */
@@ -1599,7 +1634,7 @@ ul.plain li::before { color:var(--p-i-ink); }
 </section>
 
 <!-- 14 · Lesson 1 part 5a: the debrief Turn and Talk, on the school's own structure -->
-<section data-element="lap1" class="slide g-stack" data-timer="180" data-timer-group="turntalk" data-cfu="What did your partner say? || Cold call partners with the Random Name Picker, partner mode on, hands stay down, three seconds of Wait Time after each name. || Success Criteria 2: explain what to do when someone is mean to you online" data-notes="&lt;strong&gt;Lap 1 part 5, the debrief, 14:32 to 14:35, 3 minutes. Read all four lines before anyone speaks.&lt;/strong&gt; Call Swap out loud at ninety seconds. &lt;span class='tag cfu'&gt;CFU&lt;/span&gt; then cold call partners: what did your partner say? &lt;strong&gt;Partner mode on in the picker.&lt;/strong&gt; &lt;strong&gt;Below Level:&lt;/strong&gt; the sentence starter on the Everybody Writes slide is already on screen for them.">
+<section data-element="lap1" class="slide g-stack" data-tt-partner="beside" data-tt-first="alpha" data-timer="180" data-timer-group="turntalk" data-cfu="What did your partner say? || Cold call partners with the Random Name Picker, partner mode on, hands stay down, three seconds of Wait Time after each name. || Success Criteria 2: explain what to do when someone is mean to you online" data-notes="&lt;strong&gt;Lap 1 part 5, the debrief, 14:32 to 14:35, 3 minutes. Read all four lines before anyone speaks.&lt;/strong&gt; Call Swap out loud at ninety seconds. &lt;span class='tag cfu'&gt;CFU&lt;/span&gt; then cold call partners: what did your partner say? &lt;strong&gt;Partner mode on in the picker.&lt;/strong&gt; &lt;strong&gt;Below Level:&lt;/strong&gt; the sentence starter on the Everybody Writes slide is already on screen for them.">
   <div class="slide-content" style="max-width:min(96vw,2400px)">
     <p class="eyebrow reveal">// turn_and_talk</p>
     <h2 class="reveal" style="margin-bottom:calc(var(--element-gap) * 0.5)">Turn and Talk</h2>
@@ -1607,8 +1642,8 @@ ul.plain li::before { color:var(--p-i-ink); }
       <p style="font-size:var(--h3-size); line-height:1.4">What did the Upstander do that worked, and what did it feel like to be the Bystander?</p>
     </div>
     <ul class="steps" style="gap:calc(var(--element-gap) * 0.3); margin-top:var(--element-gap)">
-      <li class="reveal"><b>Your partner</b> is the person beside you.</li>
-      <li class="reveal"><b>First speaker</b> is the partner whose first name comes first in the alphabet.</li>
+      <li class="reveal tt-row" data-tt-row="partner"><b>Your partner</b> is the person beside you.</li>
+      <li class="reveal tt-row" data-tt-row="first"><b>First speaker:</b> The partner whose first name comes first in the alphabet talks first. Same? Rock, paper, scissors.</li>
       <li class="reveal"><b>Swap</b> when Mr Igor says Swap. The other partner talks.</li>
       <li class="reveal"><b>Then I ask you what your partner said.</b> Hands stay down.</li>
     </ul>
@@ -2054,15 +2089,15 @@ const DECK_VERSION = 'v20260910-133646';
 const RUNTIME_STRIP = {
   /* emptied: the boot code fills these */
   containers: ['.sheet-slot', '.nav-dots', '#pkQueue', '#pkRoster', '#pkNote', '#notesBody',
-                '#ovGrid', '#ovFan', '#slideNum', '#notesCounter'],
+                '#ovGrid', '#ovFan', '#slideNum', '#notesCounter', '.tt-row'],
   /* removed outright: the boot code creates these */
   nodes: ['.pic-open', '.timer-dock', '.ringstep-mark',
-           '.chip-rail', '.cfu-panel', '.chip-mark', 'scribe-shadow', '.ds-dot', '.ds-pass'],
+           '.chip-rail', '.cfu-panel', '.chip-mark', 'scribe-shadow', '.ds-dot', '.ds-pass', '.tt-rulelist'],
   /* attributes written at run time, as [selector, attribute] */
   attrs: [['*', 'data-orig-html'], ['*', 'contenteditable'],
           ['#navPrev', 'disabled'], ['#navNext', 'disabled'],
           ['[data-ring-step]', 'data-fragment'], ['.sheet-slot', 'data-ring-at'],
-          ['*', 'data-scribe-recorder-ready']],
+          ['*', 'data-scribe-recorder-ready'], ['[data-tt-partner]', 'data-tt-state']],
   /* classes toggled at run time, as [selector, class] */
   classes: [['.slide', 'visible'], ['.slide', 'active'], ['*', 'fragment-visible'],
             ['.slide', 'has-chips'], ['.ov-grid', 'seven'],
@@ -2144,7 +2179,12 @@ const NOTES_KEY = 'refdeck-notes';
 /* The Pre and Post List ticks: keyed by the line's own words, never by the deck version, so a push
    never wipes a morning's ticks and a reworded line simply starts unticked. Never baked into an export. */
 const CHECKS_KEY = 'refdeck-checks';
-try { Object.keys(localStorage).forEach(k => { if (k !== EDIT_KEY && k !== HIDDEN_KEY && k !== NOTES_KEY && k !== CHECKS_KEY && k !== 'deck-sync-pass' && !/:ts$/.test(k)) localStorage.removeItem(k); }); } catch (e) {}
+/* A Turn and Talk choice (a different rule, or beside/table): version keyed exactly like
+   an inline edit, so it survives a reload but a push purges it. Declared here, with its
+   sibling keys, so the boot purge below can step over it; the ColdCallPicker and
+   TurnAndTalk classes further down are what actually read and write it. */
+const TT_KEY = 'refdeck-tt:' + DECK_VERSION;
+try { Object.keys(localStorage).forEach(k => { if (k !== EDIT_KEY && k !== HIDDEN_KEY && k !== NOTES_KEY && k !== CHECKS_KEY && k !== TT_KEY && k !== 'deck-sync-pass' && !/:ts$/.test(k)) localStorage.removeItem(k); }); } catch (e) {}
 
 /* ===========================================
    STUDENT SHEET: one template, cloned into every point of use.
@@ -4214,6 +4254,185 @@ class DeckOverview {
 }
 
 /* ===========================================
+   TURN AND TALK
+   Every Turn and Talk slide carries its default in data-tt-partner ("beside" or
+   "table") and data-tt-first (one of the ten rule ids below), on the section
+   itself. The two live lines are boot-built inside .tt-row, exactly the way a
+   CFU chip is: nothing here is ever hand edited (editableIn() below steps over
+   any .tt-row), and nothing here survives a Cmd+S export (RUNTIME_STRIP empties
+   .tt-row and strips the reflected data-tt-state attribute, so the next boot
+   redraws the slide's own authored default rather than whatever Mr Igor had
+   open at the time).
+   Mr Igor's own choice (a different rule, Shuffle, or the partner switch) is
+   saved per slide in localStorage keyed by DECK_VERSION, the same pattern as an
+   inline edit, so it survives a reload but never outlives a push. It is kept
+   OFF the .tt-row DOM: the resolved value also lands on the slide's own
+   data-tt-state attribute (JSON), which is how the Random Name Picker's partner
+   mode below reads what this slide is doing right now.
+   =========================================== */
+const TT_FIRST_RULES = [
+  { id:'alpha',         label:'The partner whose first name comes first in the alphabet talks first.',
+    tie:' Same? Rock, paper, scissors.' },
+  { id:'birthday-year', label:'The partner with the earlier birthday in the year talks first.',
+    tie:' Same? Rock, paper, scissors.' },
+  { id:'birthday-half', label:'The partner whose birthday is on the 1st to the 15th of the month talks first.',
+    tie:' Same? Rock, paper, scissors.' },
+  { id:'older',         label:'The older partner talks first.',
+    tie:' Same? Rock, paper, scissors.' },
+  { id:'younger',       label:'The younger partner talks first.',
+    tie:' Same? Rock, paper, scissors.' },
+  { id:'shorter',       label:'The shorter partner talks first.',
+    tie:' Same? Rock, paper, scissors.' },
+  { id:'socks',         label:'The partner with the lighter coloured socks talks first.',
+    tie:' Same? Rock, paper, scissors.' },
+  { id:'longer-name',   label:'The partner with the longer first name talks first.',
+    tie:' Same? Rock, paper, scissors.' },
+  { id:'woke-early',    label:'The partner who woke up earlier today talks first.',
+    tie:' Not sure? Rock, paper, scissors.' },
+  { id:'rps',           label:'Play rock, paper, scissors. The winner talks first.',
+    tie:'' }
+];
+/* the two whole sentences item 2 of the brief specifies, kept together so the
+   li build below and any future reader see both worded in full, side by side */
+const TT_PARTNER_WORDS = {
+  beside: 'Your partner is the person beside you.',
+  table:  'Your partner is anyone at your table.'
+};
+/* TT_KEY itself is declared with its sibling storage keys near DECK_VERSION,
+   above, so the boot purge can step over it before this class ever runs. */
+
+class TurnAndTalk {
+  constructor(presentation) {
+    this.p = presentation;
+    this.slides = Array.from(document.querySelectorAll('[data-tt-partner]'));
+    if (!this.slides.length) return;
+    this.state = {};
+    try { this.state = JSON.parse(localStorage.getItem(TT_KEY) || '{}') || {}; } catch (e) { this.state = {}; }
+    this.openSlide = null; /* which slide's list is open, one at a time, or null */
+    this.buildList();
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') this.closeList(); });
+    this.slides.forEach(slide => this.render(slide));
+  }
+  ruleFor(id) { return TT_FIRST_RULES.find(r => r.id === id) || TT_FIRST_RULES[0]; }
+  /* presentation.slides is a live NodeList (querySelectorAll), which has no
+     .indexOf of its own. */
+  slideIndex(slide) { return this.p ? Array.prototype.indexOf.call(this.p.slides, slide) : -1; }
+  effective(slide) {
+    const si = this.slideIndex(slide);
+    const saved = this.state[si] || {};
+    const partner = (saved.partner === 'table' || saved.partner === 'beside') ? saved.partner : (slide.dataset.ttPartner || 'beside');
+    const first = (saved.first && TT_FIRST_RULES.some(r => r.id === saved.first)) ? saved.first : (slide.dataset.ttFirst || 'alpha');
+    return { partner: partner, first: first };
+  }
+  save() { try { localStorage.setItem(TT_KEY, JSON.stringify(this.state)); } catch (e) {} }
+  setPartner(slide, val) {
+    const si = this.slideIndex(slide);
+    this.state[si] = Object.assign({}, this.state[si], { partner: val });
+    this.save();
+    this.render(slide);
+  }
+  setFirst(slide, id) {
+    const si = this.slideIndex(slide);
+    this.state[si] = Object.assign({}, this.state[si], { first: id });
+    this.save();
+    this.closeList();
+    this.render(slide);
+  }
+  shuffle(slide) {
+    const eff = this.effective(slide);
+    const rest = TT_FIRST_RULES.filter(r => r.id !== eff.first);
+    const pick = rest[Math.floor(Math.random() * rest.length)];
+    this.setFirst(slide, pick.id);
+  }
+  /* One shared list for every Turn and Talk slide, built once and appended to
+     <body>: .slide and .slide-content both clip overflow, and a .reveal row
+     carries transform:translateY(0) at rest, which would pin a position:fixed
+     child to ITSELF instead of the viewport. Off the slide tree entirely, this
+     opens centred and reachable from any row, at any slide height. Closes the
+     way the picker and the sheet lightbox do: the backdrop, Esc, or a choice. */
+  buildList() {
+    this.listWrap = document.createElement('div');
+    this.listWrap.className = 'tt-rulelist';
+    this.listWrap.setAttribute('role', 'presentation');
+    this.card = document.createElement('div');
+    this.card.className = 'tt-rule-card';
+    this.card.setAttribute('role', 'listbox');
+    this.card.setAttribute('aria-label', 'Choose who talks first');
+    this.opts = TT_FIRST_RULES.map(r => {
+      const opt = document.createElement('button');
+      opt.type = 'button'; opt.className = 'tt-rule-opt';
+      opt.setAttribute('role', 'option');
+      opt.textContent = r.label;
+      opt.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (this.openSlide) this.setFirst(this.openSlide, r.id);
+      });
+      this.card.appendChild(opt);
+      return opt;
+    });
+    this.listWrap.appendChild(this.card);
+    this.listWrap.addEventListener('click', (e) => { if (e.target === this.listWrap) this.closeList(); });
+    document.body.appendChild(this.listWrap);
+  }
+  closeList() {
+    if (!this.openSlide) return;
+    const btn = this.openSlide.querySelector('[data-tt-row="first"] .tt-first-line');
+    if (btn) btn.setAttribute('aria-expanded', 'false');
+    this.listWrap.classList.remove('open');
+    this.openSlide = null;
+  }
+  toggleList(slide) {
+    if (this.openSlide === slide) { this.closeList(); return; }
+    this.closeList();
+    const eff = this.effective(slide);
+    this.opts.forEach((opt, i) => opt.classList.toggle('active', TT_FIRST_RULES[i].id === eff.first));
+    const btn = slide.querySelector('[data-tt-row="first"] .tt-first-line');
+    if (btn) btn.setAttribute('aria-expanded', 'true');
+    this.listWrap.classList.add('open');
+    this.openSlide = slide;
+    const first = this.card.querySelector('.tt-rule-opt.active') || this.opts[0];
+    if (first) first.focus();
+  }
+  render(slide) {
+    const eff = this.effective(slide);
+    slide.dataset.ttState = JSON.stringify(eff);
+    const rowP = slide.querySelector('[data-tt-row="partner"]');
+    const rowF = slide.querySelector('[data-tt-row="first"]');
+    if (rowP) {
+      rowP.innerHTML = '';
+      const sentence = TT_PARTNER_WORDS[eff.partner] || TT_PARTNER_WORDS.beside;
+      const b = document.createElement('b'); b.textContent = 'Your partner'; rowP.appendChild(b);
+      rowP.appendChild(document.createTextNode(' ' + sentence.replace(/^Your partner /, '') + ' '));
+      const sw = document.createElement('button');
+      sw.type = 'button'; sw.className = 'tt-ctl tt-switch';
+      sw.textContent = eff.partner === 'table' ? 'switch to beside' : 'switch to table';
+      sw.setAttribute('aria-label', 'Switch your partner between the person beside you and anyone at your table');
+      sw.addEventListener('click', (e) => { e.stopPropagation(); this.setPartner(slide, eff.partner === 'table' ? 'beside' : 'table'); });
+      rowP.appendChild(sw);
+    }
+    if (rowF) {
+      rowF.innerHTML = '';
+      const line = document.createElement('button');
+      line.type = 'button'; line.className = 'tt-ctl tt-first-line';
+      line.setAttribute('aria-haspopup', 'listbox');
+      line.setAttribute('aria-expanded', this.openSlide === slide ? 'true' : 'false');
+      const rule = this.ruleFor(eff.first);
+      const b = document.createElement('b'); b.textContent = 'First speaker:'; line.appendChild(b);
+      line.appendChild(document.createTextNode(' ' + rule.label + rule.tie));
+      line.addEventListener('click', (e) => { e.stopPropagation(); this.toggleList(slide); });
+      rowF.appendChild(line);
+      const shuf = document.createElement('button');
+      shuf.type = 'button'; shuf.className = 'tt-ctl tt-shuffle';
+      shuf.textContent = 'Shuffle';
+      shuf.setAttribute('aria-label', 'Shuffle to a different first speaker rule');
+      shuf.addEventListener('click', (e) => { e.stopPropagation(); this.shuffle(slide); });
+      rowF.appendChild(shuf);
+    }
+    if (this.openSlide === slide) this.opts.forEach((opt, i) => opt.classList.toggle('active', TT_FIRST_RULES[i].id === eff.first));
+  }
+}
+
+/* ===========================================
    RANDOM NAME PICKER
    The roster is 071DITA off the school's own class list, and the table numbers
    are that class's own seating plan for IG04. Full names are on screen by Igor's ruling for
@@ -4237,32 +4456,39 @@ class DeckOverview {
      the add to the last answer prompt, naming the person before;
      hands stay down, on screen the moment the switch goes on.
    =========================================== */
+/* pair copied by full name from the latest Grade 7 deck's own roster (G7 W4 L2,
+   rendered off the Grade 7 seating master), so a beside partner is the same
+   pairing that class already sits in. Every one of these 20 names matched;
+   none were left without a pair. */
 const ROSTER = [
-  { first:'Abdallah',        full:'Abdallah Alkandari',      table:2 },
-  { first:'Abdulla',         full:'Abdulla Alowais',         table:1 },
-  { first:'Adam',            full:'Adam Alobeidyeen',        table:2 },
-  { first:'Adam',            full:'Adam Elsheikh',           table:3 },
-  { first:'Ali',             full:'Ali Alrobari',            table:3 },
-  { first:'Ali',             full:'Ali Mahmoud',             table:2 },
-  { first:'Ali',             full:'Ali Mohsini',             table:2 },
-  { first:'Faisal',          full:'Faisal Almaazmi',         table:4 },
-  { first:'Faisal',          full:'Faisal Ghalib',           table:4 },
-  { first:'Hasan',           full:'Hasan Sidiqi',            table:4 },
-  { first:'Mansoor',         full:'Mansoor Alzarooni',       table:1 },
-  { first:'Mayed',           full:'Mayed Dawood',            table:4 },
-  { first:'Mohammed Ahmed',  full:'Mohammed Ahmed Alkaabi',  table:5 },
-  { first:'Muhammad',        full:'Muhammad Hamdan',         table:5 },
-  { first:'Nasser',          full:'Nasser Al-ali',           table:5 },
-  { first:'Saqer',           full:'Saqer Alqasimi',          table:5 },
-  { first:'Syed Muhammad',   full:'Syed Muhammad Ali',       table:6 },
-  { first:'Yousif',          full:'Yousif Alhammadi',        table:6 },
-  { first:'Yusuf',           full:'Yusuf Tohirov',           table:6 },
-  { first:'Zayed',           full:'Zayed Alkaabi',           table:6 }
+  { first:'Abdallah',        full:'Abdallah Alkandari',      table:2, pair:3 },
+  { first:'Abdulla',         full:'Abdulla Alowais',         table:1, pair:4 },
+  { first:'Adam',            full:'Adam Alobeidyeen',        table:2, pair:3 },
+  { first:'Adam',            full:'Adam Elsheikh',           table:3, pair:1 },
+  { first:'Ali',             full:'Ali Alrobari',            table:3, pair:1 },
+  { first:'Ali',             full:'Ali Mahmoud',             table:2, pair:2 },
+  { first:'Ali',             full:'Ali Mohsini',             table:2, pair:2 },
+  { first:'Faisal',          full:'Faisal Almaazmi',         table:4, pair:6 },
+  { first:'Faisal',          full:'Faisal Ghalib',           table:4, pair:6 },
+  { first:'Hasan',           full:'Hasan Sidiqi',            table:4, pair:5 },
+  { first:'Mansoor',         full:'Mansoor Alzarooni',       table:1, pair:4 },
+  { first:'Mayed',           full:'Mayed Dawood',            table:4, pair:5 },
+  { first:'Mohammed Ahmed',  full:'Mohammed Ahmed Alkaabi',  table:5, pair:7 },
+  { first:'Muhammad',        full:'Muhammad Hamdan',         table:5, pair:7 },
+  { first:'Nasser',          full:'Nasser Al-ali',           table:5, pair:8 },
+  { first:'Saqer',           full:'Saqer Alqasimi',          table:5, pair:8 },
+  { first:'Syed Muhammad',   full:'Syed Muhammad Ali',       table:6, pair:9 },
+  { first:'Yousif',          full:'Yousif Alhammadi',        table:6, pair:9 },
+  { first:'Yusuf',           full:'Yusuf Tohirov',           table:6, pair:10 },
+  { first:'Zayed',           full:'Zayed Alkaabi',           table:6, pair:10 }
 ];
 const WAIT_SECONDS = 3;
 
 class ColdCallPicker {
-  constructor() {
+  constructor(presentation) {
+    /* so partner mode can read the CURRENT slide's Turn and Talk setting,
+       via its live data-tt-state (Turn and Talk item 6). */
+    this.p = presentation || null;
     this.wrap = document.getElementById('picker');
     if (!this.wrap) return;
     const id = (x) => document.getElementById(x);
@@ -4302,6 +4528,16 @@ class ColdCallPicker {
   /* ---- state ---- */
   present() { return ROSTER.map((s, i) => i).filter(i => !this.absent.has(i)); }
   tableMates(i) { return ROSTER.map((s, k) => k).filter(k => k !== i && ROSTER[k].table === ROSTER[i].table); }
+  /* the beside partner, from the pair field, for a slide with a Turn and Talk setting */
+  pairMates(i) { return ROSTER.map((s, k) => k).filter(k => k !== i && ROSTER[k].pair === ROSTER[i].pair); }
+  /* the current slide's own Turn and Talk state, if it has one (item 6): read off
+     data-tt-state, which TurnAndTalk.render() keeps in step with the slide on screen. */
+  ttMode() {
+    if (!this.p || !this.p.slides) return null;
+    const slide = this.p.slides[this.p.current];
+    if (!slide || !slide.dataset.ttState) return null;
+    try { return JSON.parse(slide.dataset.ttState).partner; } catch (e) { return null; }
+  }
   newRound() {
     this.round += 1;
     this.called = new Set();
@@ -4428,9 +4664,22 @@ class ColdCallPicker {
     }
     const mates = this.current === null ? [] : this.tableMates(this.current).filter(i => !this.absent.has(i));
     if (this.partnerMode && this.current !== null) {
-      this.el.partner.textContent = mates.length
-        ? 'Ask: what did your partner say? ' + (mates.length > 1 ? 'Partners: ' : 'Partner: ') + mates.map(i => ROSTER[i].full).join(' and ')
-        : 'No partner here today. Ask what they said themselves, then draw a second name.';
+      const mode = this.ttMode();
+      if (mode === 'beside') {
+        /* names only the pair mate, never the wider table (item 6) */
+        const beside = this.pairMates(this.current).filter(i => !this.absent.has(i));
+        this.el.partner.textContent = beside.length
+          ? (beside.length > 1 ? 'Partners: ' : 'Partner: ') + beside.map(i => ROSTER[i].full).join(' and ')
+          : 'No partner here today. Ask what they said themselves, then draw a second name.';
+      } else if (mode === 'table') {
+        /* names nobody: the whole table shared the talk, so no single mate to name (item 6) */
+        this.el.partner.textContent = 'Ask: who was your partner, and what did they say?';
+      } else {
+        /* no Turn and Talk setting on this slide: today's behaviour, unchanged */
+        this.el.partner.textContent = mates.length
+          ? 'Ask: what did your partner say? ' + (mates.length > 1 ? 'Partners: ' : 'Partner: ') + mates.map(i => ROSTER[i].full).join(' and ')
+          : 'No partner here today. Ask what they said themselves, then draw a second name.';
+      }
       this.el.partner.classList.remove('empty');
     } else this.el.partner.classList.add('empty');
     if (this.ratioMode && this.current !== null && this.previous !== null) {
@@ -4605,7 +4854,7 @@ class InlineEditor {
        leaving them out also keeps the edit addresses stable whether the chips have
        been built yet or not. */
     return Array.from(slide.querySelectorAll(this.selector))
-      .filter(el => !el.closest('.sheet') && !el.closest('.cfu-panel') && !el.closest('.chip-rail'));
+      .filter(el => !el.closest('.sheet') && !el.closest('.cfu-panel') && !el.closest('.chip-rail') && !el.closest('.tt-row'));
   }
   saveEdits() {
     const edits = {};
@@ -4718,7 +4967,8 @@ new FullscreenController();
 new TeacherToggle();
 new CursorEffects();
 sheetLightbox = new PictureLightbox(presentation);
-const coldCall = new ColdCallPicker();
+const coldCall = new ColdCallPicker(presentation);
+const turnAndTalk = new TurnAndTalk(presentation);
 const deckNav = new DeckNav(presentation, coldCall);
 const editor = new InlineEditor(presentation);
 deckOverview = new DeckOverview(presentation);
@@ -4797,7 +5047,8 @@ window.deck = { presentation: presentation, DECK_VERSION: DECK_VERSION, EDIT_KEY
                 notes: nextLessonNotes, NOTES_KEY: NOTES_KEY,
                 RUNTIME_STRIP: RUNTIME_STRIP, exportHTML: () => editor.serialise(),
                 chipsOf: chipsOf, syncFragments: syncFragments, ringStepAt: ringStepAt,
-                lightbox: sheetLightbox, setRingStep: setRingStep };
+                lightbox: sheetLightbox, setRingStep: setRingStep,
+                turnAndTalk: turnAndTalk, TT_KEY: TT_KEY };
 </script>
 <script>
 /* The presenter key hint lives in the bottom chrome band, to the left of the slide
