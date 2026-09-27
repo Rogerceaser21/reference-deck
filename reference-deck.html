@@ -787,7 +787,7 @@ body.edit-active [contenteditable="true"] { outline:2px dashed var(--p-o); outli
 .dn-pick { background:var(--p-t); color:#fff; }
 .dn-over { background:var(--p-j); color:#fff; }
 /* Anything opened over the deck owns the screen, so the bar steps out of the way. */
-body.sheet-zoom-open .deck-nav, body.picker-open .deck-nav { display:none; }
+body.sheet-zoom-open .deck-nav, body.picker-open .deck-nav, body.prep-zoom-open .deck-nav { display:none; }
 
 /* ===========================================
    RANDOM NAME PICKER
@@ -993,6 +993,52 @@ body.sheet-zoom-open .deck-nav, body.picker-open .deck-nav { display:none; }
 .ov-line b { color:var(--p-o); font-weight:400; }
 @media (max-width:1100px) { .ov-grid, .ov-grid.seven { grid-template-columns:repeat(2, minmax(0, 1fr)); }
   .ov-card.w2, .ov-card.w3, .ov-card.wide { grid-column:auto; } }
+
+/* ---- THE PRE AND POST LIST, FULL SIZE (Igor, 27 Sep 2026) ----
+   "I want to be able to click on it and enlarge it to a normal deck slide so
+   I can read through it and tick off everything." A tap anywhere on the
+   checklist card except a tick box or a link button raises this panel; the
+   Open list button does the same for anyone who does not know the card is
+   tappable. Both views draw from the one ticks object, so ticking a line in
+   either place ticks it in the other straight away, and the tick still saves
+   under CHECKS_KEY. While it is open navBlocked() is true, so NEXT, BACK, the
+   arrow keys and the clicker never move the deck behind it, and the picker
+   cannot open over it. */
+.ov-card.prep { cursor:pointer; }
+.ov-card.prep:hover { filter:brightness(1.35); }
+.ov-prep-open { align-self:flex-start; margin-top:clamp(2px, 0.4vh, 6px);
+  font-family:var(--font-label); font-size:0.82em; background:var(--p-i); color:var(--ink);
+  border:0; padding:0.05em 0.6em; cursor:pointer; }
+.ov-prep-open:hover { filter:brightness(1.1); }
+.ov-prep-open:focus-visible { outline:3px solid var(--p-o); outline-offset:2px; }
+
+.prep-zoom { position:fixed; inset:0; z-index:10060; display:none;
+  align-items:center; justify-content:center; background:rgba(5,7,14,.94);
+  padding:clamp(18px,3.4vh,54px) clamp(12px,3vw,54px); }
+.prep-zoom.open { display:flex; }
+.prep-zoom-inner { width:100%; height:100%; max-width:min(96vw, 2100px);
+  background:var(--panel); color:#EEF2FF; position:relative; overflow:hidden;
+  padding:var(--slide-padding); display:flex; flex-direction:column;
+  gap:clamp(0.35rem, 1vh, 0.9rem);
+  box-shadow:inset calc(var(--px) * -1) calc(var(--px) * -1) 0 rgba(0,0,0,.45),
+             inset var(--px) var(--px) 0 rgba(255,255,255,.14); }
+.prep-zoom-head { flex:none; display:flex; align-items:center; justify-content:space-between; }
+.prep-zoom-close { font-family:var(--font-label); font-size:clamp(1rem,2vh,1.6rem); background:var(--p-z); color:#fff;
+  border:0; padding:0.18em 0.7em; cursor:pointer;
+  box-shadow:inset -3px -3px 0 rgba(0,0,0,.35), inset 3px 3px 0 rgba(255,255,255,.25); }
+.prep-zoom-close:hover { filter:brightness(1.1); }
+.prep-zoom-close:focus-visible { outline:3px solid var(--p-o); outline-offset:3px; }
+.prep-zoom-title { flex:none; font-family:var(--font-display); font-size:var(--h2-size); color:#fff; margin:0.15em 0 0; }
+.prep-zoom-list { flex:1; min-height:0; overflow-y:auto; list-style:none; margin:0; padding:0;
+  display:flex; flex-direction:column; gap:clamp(0.28rem, 0.85vh, 0.8rem); }
+.prep-zoom-list li { font-family:var(--font-body); font-size:var(--body-size); line-height:1.26;
+  color:var(--mist); display:flex; align-items:baseline; gap:0.5em; flex-wrap:wrap; }
+.prep-zoom-list label { display:inline-flex; align-items:baseline; gap:0.5em; cursor:pointer; }
+.prep-zoom-list .ov-tick { width:1.05em; height:1.05em; }
+.prep-zoom-list li.done > label { color:#7F89A8; text-decoration:line-through; text-decoration-color:rgba(127,137,168,.6); }
+.prep-zoom-list li.post { margin-top:clamp(2px, 0.4vh, 6px); padding-top:clamp(2px, 0.4vh, 6px); border-top:1px solid rgba(255,255,255,.14); }
+.prep-zoom-list .ov-link, .prep-zoom-list .ov-jump { font-size:0.72em; }
+@media (prefers-reduced-motion:reduce) { .prep-zoom { transition:none; } }
 
 /* ---- THE FAN OUT (Igor, 6 September 2026) ----
    A card tap does not jump straight to a slide any more. The card lifts to the
@@ -1291,6 +1337,15 @@ ul.plain li::before { color:var(--p-i-ink); }
 .ov-tile.is-hidden .ov-tile-box { filter:grayscale(.85) opacity(.45); }
 .ov-tile-num { color:var(--ink); }
 .ov-tile.is-hidden .ov-tile-num { color:var(--mist); }
+
+/* the Pre and Post List, full size, light too */
+.prep-zoom-inner { background:var(--panel); color:var(--ink);
+  box-shadow:inset calc(var(--px) * -1) calc(var(--px) * -1) 0 rgba(0,0,0,.16),
+             inset var(--px) var(--px) 0 rgba(255,255,255,.9); }
+.prep-zoom-title { color:var(--ink); }
+.prep-zoom-list li { color:var(--mist); }
+.prep-zoom-list li.done > label { color:#8A8F9C; text-decoration-color:rgba(138,143,156,.7); }
+.prep-zoom-list li.post { border-top:1px solid rgba(0,0,0,.16); }
 
 </style>
 </head>
@@ -1683,7 +1738,7 @@ ul.plain li::before { color:var(--p-i-ink); }
 </section>
 
 <!-- 19 · Brain break, end of Lesson 1: Four Corners, with the card draw built into the slide -->
-<section data-element="lap1" class="slide g-grassy" data-timer="180" data-timer-group="break1" data-notes="&lt;strong&gt;Brain break, end of Lap 1, 14:49 to 14:52, 3 minutes.&lt;/strong&gt; Say it to start it: everyone up, choose a corner, no talking. &lt;strong&gt;The four suit cards are already taped in the corners of IG04. Tap DRAW A CARD on the slide, so no pack and no phone are needed.&lt;/strong&gt; &lt;strong&gt;If Lap 1 ran long, this is the first thing to shorten: two rounds instead of playing to a winner.&lt;/strong&gt;">
+<section data-element="lap1" class="slide g-grassy" data-timer="180" data-timer-group="break1" data-prep="Four card suits, one taped in each corner of IG04." data-notes="&lt;strong&gt;Brain break, end of Lap 1, 14:49 to 14:52, 3 minutes.&lt;/strong&gt; Say it to start it: everyone up, choose a corner, no talking. &lt;strong&gt;The four suit cards are already taped in the corners of IG04. Tap DRAW A CARD on the slide, so no pack and no phone are needed.&lt;/strong&gt; &lt;strong&gt;If Lap 1 ran long, this is the first thing to shorten: two rounds instead of playing to a winner.&lt;/strong&gt;">
   <div class="slide-content" style="max-width:min(96vw,2400px)">
     <p class="eyebrow reveal">// brain_break · end_of_lesson_1</p>
     <h2 class="reveal" style="margin-bottom:calc(var(--element-gap) * 0.5)">Four Corners</h2>
@@ -1976,6 +2031,22 @@ ul.plain li::before { color:var(--p-i-ink); }
   <div class="ov-fan" id="ovFan"></div>
 </div>
 
+<!-- The Pre and Post List, full size (Igor, 27 Sep 2026): a tap on the checklist
+     card's body, or its own Open list button, raises this to a normal slide
+     sized panel so he can read every line and tick it off. Built at run time
+     from the same list the small card uses, and emptied again by RUNTIME_STRIP,
+     so a saved copy carries the empty div. -->
+<div class="prep-zoom" id="prepZoom" role="dialog" aria-modal="true" aria-label="Pre and Post List, full size">
+  <div class="prep-zoom-inner" id="prepZoomInner">
+    <div class="prep-zoom-head">
+      <span class="eyebrow">// pre and post list</span>
+      <button class="prep-zoom-close" id="prepZoomClose" type="button" aria-label="Close the list">✕ close</button>
+    </div>
+    <h2 class="prep-zoom-title">Pre and Post List</h2>
+    <ul class="prep-zoom-list" id="prepZoomList"></ul>
+  </div>
+</div>
+
 <!-- On-screen navigation, so a lesson with no clicker in the room still moves.
      BACK and NEXT are the arrow keys with a finger on them, fragments and all.
      OVERVIEW sits at the left end and goes back to the lesson plan on screen. -->
@@ -2054,20 +2125,21 @@ const DECK_VERSION = 'v20260910-133646';
 const RUNTIME_STRIP = {
   /* emptied: the boot code fills these */
   containers: ['.sheet-slot', '.nav-dots', '#pkQueue', '#pkRoster', '#pkNote', '#notesBody',
-                '#ovGrid', '#ovFan', '#slideNum', '#notesCounter'],
+                '#ovGrid', '#ovFan', '#slideNum', '#notesCounter', '#prepZoomList'],
   /* removed outright: the boot code creates these */
   nodes: ['.pic-open', '.timer-dock', '.ringstep-mark',
            '.chip-rail', '.cfu-panel', '.chip-mark', 'scribe-shadow', '.ds-dot', '.ds-pass'],
   /* attributes written at run time, as [selector, attribute] */
   attrs: [['*', 'data-orig-html'], ['*', 'contenteditable'],
-          ['#navPrev', 'disabled'], ['#navNext', 'disabled'],
+          ['#navPrev', 'disabled'], ['#navNext', 'disabled'], ['#navPicker', 'disabled'],
           ['[data-ring-step]', 'data-fragment'], ['.sheet-slot', 'data-ring-at'],
           ['*', 'data-scribe-recorder-ready']],
   /* classes toggled at run time, as [selector, class] */
   classes: [['.slide', 'visible'], ['.slide', 'active'], ['*', 'fragment-visible'],
             ['.slide', 'has-chips'], ['.ov-grid', 'seven'],
             ['#isamsPop', 'show'], ['#speakerNotes', 'visible'],
-            ['#overview', 'open'], ['#overview', 'fanned'], ['*', 'overview-open']],
+            ['#overview', 'open'], ['#overview', 'fanned'], ['*', 'overview-open'],
+            ['#prepZoom', 'open'], ['*', 'prep-zoom-open']],
   /* inline style properties measured at run time, as [selector, property] */
   styleProps: [['*', '--pic-w'], ['*', '--font-scale'], ['*', '--slide-num-w'], ['*', '--chip-gutter'],
                ['*', '--hint-max'], ['*', '--nav-h'], ['.progress-bar', 'width'], ['#cursorFx', 'width'],
@@ -2675,7 +2747,12 @@ function sheetZoomOpen() { return document.body.classList.contains('sheet-zoom-o
    an arrow key, a scroll wheel or a swipe cannot walk the class off the slide
    underneath an open sheet or an open picker. */
 function pickerOpen() { return document.body.classList.contains('picker-open'); }
-function navBlocked() { return sheetZoomOpen() || pickerOpen(); }
+/* True while the Pre and Post List's full size panel is open (Igor, 27 Sep
+   2026). It joins the others in navBlocked() below, so NEXT, BACK, the arrow
+   keys and the clicker never move the deck behind it, and the picker cannot
+   open over it either. */
+function prepZoomOpen() { return document.body.classList.contains('prep-zoom-open'); }
+function navBlocked() { return sheetZoomOpen() || pickerOpen() || prepZoomOpen(); }
 
 /* The one thing that still moves while the full screen sheet is up: a sheet that walks its
    rings (deck law, The opening slides, point 8). navBlocked() itself is untouched, so edit
@@ -3770,6 +3847,33 @@ class DeckOverview {
     this.raisedBox = null;  /* where it was put, measured once and kept */
     this.tiles = [];
     this.tileAt = -1;
+    /* THE PRE AND POST LIST, FULL SIZE (Igor, 27 Sep 2026): one ticks object and
+       one entries map, shared by the small card and the big panel, so ticking a
+       line anywhere ticks it everywhere and both read the one CHECKS_KEY. */
+    this.prepZoom = document.getElementById('prepZoom');
+    this.prepZoomList = document.getElementById('prepZoomList');
+    this.prepZoomClose = document.getElementById('prepZoomClose');
+    this.prepEntries = {};
+    this.prepOpener = null;
+    this.prepTicks = {};
+    try { this.prepTicks = JSON.parse(localStorage.getItem(CHECKS_KEY) || '{}') || {}; } catch (e) { this.prepTicks = {}; }
+    if (this.prepZoom) {
+      /* a copy saved with Cmd+S mid open must not carry it back */
+      this.prepZoom.classList.remove('open');
+      document.body.classList.remove('prep-zoom-open');
+      if (this.prepZoomClose) this.prepZoomClose.addEventListener('click', () => this.closePrepZoom());
+      /* a tap on the backdrop closes it; a tap inside the panel (a tick, a link,
+         the text itself) never does, so it never fights the reader's finger */
+      this.prepZoom.addEventListener('click', (e) => { if (e.target === this.prepZoom) this.closePrepZoom(); });
+      /* Escape closes it from anywhere, even though navBlocked() (which this
+         panel now drives) has already stood every OTHER handler down. */
+      document.addEventListener('keydown', (e) => {
+        if (e.key !== 'Escape' || !this.isPrepZoomOpen()) return;
+        e.preventDefault();
+        e.stopPropagation();
+        this.closePrepZoom();
+      });
+    }
     this.build();
     const btn = document.getElementById('navOverview');
     if (btn) btn.addEventListener('click', (e) => { if (e.detail > 0) btn.blur(); this.back(); });
@@ -3803,9 +3907,16 @@ class DeckOverview {
   visibleOf(id) { return this.slidesOf(id).filter(i => !this.p.isHidden(i)); }
   build() {
     this.grid.innerHTML = '';   /* clear, so a saved copy never doubles the cards */
+    if (this.prepZoomList) this.prepZoomList.innerHTML = '';
+    this.prepEntries = {};
     this.cards = [];
     ELEMENTS.forEach(el => {
-      if (el.prep) { this.grid.appendChild(this.prepCard(el)); return; }
+      if (el.prep) {
+        const items = this.prepItems(el);
+        this.grid.appendChild(this.prepCard(el, items));
+        this.buildPrepZoomList(items);
+        return;
+      }
       if (!this.slidesOf(el.id).length) return;
       const b = document.createElement('button');
       b.type = 'button';
@@ -3859,10 +3970,91 @@ class DeckOverview {
     }
     this.refresh();
   }
-  prepCard(el) {
+  /* The list a prep card and the big panel both draw from: the plan's own
+     Before the lesson items, plus one line for every slide in the run that
+     carries data-prep, added once each, deduplicated by exact text against
+     whatever is already in the list (Igor, 27 Sep 2026). A slide's own line
+     carries no link button unless it also names data-prep-link and
+     data-prep-href. Template content is never in `.slide`, so it is never
+     asked here regardless. */
+  prepItems(el) {
+    const items = (el.items || []).slice();
+    const seen = new Set(items.map(it => it.text));
+    document.querySelectorAll('.slide[data-prep]').forEach(slide => {
+      if (slide.closest('template')) return;   /* belt and braces: never actually reached */
+      const text = (slide.dataset.prep || '').trim();
+      if (!text || seen.has(text)) return;
+      seen.add(text);
+      const item = { text: text };
+      if (slide.dataset.prepLink && slide.dataset.prepHref) {
+        item.link = slide.dataset.prepLink;
+        item.href = slide.dataset.prepHref;
+      }
+      items.push(item);
+    });
+    return items;
+  }
+  /* One line, built once, wherever it is asked for. The card and the panel
+     each get their own <li> for the same item, and both are kept in
+     this.prepEntries under the item's text, so a tick in one raises the
+     other immediately (Igor, 27 Sep 2026: "click on it and enlarge it... so I
+     can read through it and tick off everything"). */
+  buildPrepLine(it) {
+    const li = document.createElement('li');
+    if (it.post) li.classList.add('post');
+    const lab = document.createElement('label');
+    const box = document.createElement('input');
+    box.type = 'checkbox'; box.className = 'ov-tick';
+    box.checked = !!this.prepTicks[it.text];
+    li.classList.toggle('done', box.checked);
+    box.addEventListener('change', () => this.setPrepTick(it.text, box.checked));
+    const span = document.createElement('span');
+    span.textContent = it.text;
+    lab.appendChild(box); lab.appendChild(span);
+    li.appendChild(lab);
+    if (it.href) {
+      const a = document.createElement('a');
+      a.className = 'ov-link'; a.href = it.href; a.target = '_blank'; a.rel = 'noopener';
+      a.textContent = it.link || 'open';
+      li.appendChild(a);
+    } else if (it.jump) {
+      const j = document.createElement('button');
+      j.type = 'button'; j.className = 'ov-jump';
+      j.textContent = it.link || 'open';
+      j.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const target = document.getElementById(it.jump);
+        const sec = target && target.closest('section.slide');
+        const idx = sec ? Array.from(this.p.slides).indexOf(sec) : -1;
+        if (idx < 0) return;
+        this.closePrepZoom();
+        this.closeFan(false);
+        this.close();
+        this.p.goTo(idx);
+      });
+      li.appendChild(j);
+    }
+    (this.prepEntries[it.text] || (this.prepEntries[it.text] = [])).push({ box: box, li: li });
+    return li;
+  }
+  /* Ticks are one state: keyed by the line's own words, saved under CHECKS_KEY
+     exactly as before, and pushed out to every checkbox that carries that
+     text, card and panel alike, so the two views can never disagree. */
+  setPrepTick(text, checked) {
+    if (checked) this.prepTicks[text] = true; else delete this.prepTicks[text];
+    try { localStorage.setItem(CHECKS_KEY, JSON.stringify(this.prepTicks)); } catch (e) {}
+    (this.prepEntries[text] || []).forEach(entry => {
+      entry.box.checked = checked;
+      entry.li.classList.toggle('done', checked);
+    });
+  }
+  prepCard(el, items) {
     const d = document.createElement('div');
     d.className = 'ov-card prep';
     d.dataset.el = el.id;
+    d.tabIndex = 0;
+    d.setAttribute('role', 'button');
+    d.setAttribute('aria-label', 'Open the ' + el.name + ' full size');
     const top = document.createElement('span');
     top.className = 'ov-top';
     const name = document.createElement('span');
@@ -3875,51 +4067,66 @@ class DeckOverview {
     d.appendChild(top);
     const ul = document.createElement('ul');
     ul.className = 'ov-prep';
-    let ticks = {};
-    try { ticks = JSON.parse(localStorage.getItem(CHECKS_KEY) || '{}') || {}; } catch (e) { ticks = {}; }
-    const save = () => { try { localStorage.setItem(CHECKS_KEY, JSON.stringify(ticks)); } catch (e) {} };
-    (el.items || []).forEach(it => {
-      const li = document.createElement('li');
-      if (it.post) li.classList.add('post');
-      const lab = document.createElement('label');
-      const box = document.createElement('input');
-      box.type = 'checkbox'; box.className = 'ov-tick';
-      box.checked = !!ticks[it.text];
-      li.classList.toggle('done', box.checked);
-      box.addEventListener('change', () => {
-        if (box.checked) ticks[it.text] = true; else delete ticks[it.text];
-        li.classList.toggle('done', box.checked);
-        save();
-      });
-      const span = document.createElement('span');
-      span.textContent = it.text;
-      lab.appendChild(box); lab.appendChild(span);
-      li.appendChild(lab);
-      if (it.href) {
-        const a = document.createElement('a');
-        a.className = 'ov-link'; a.href = it.href; a.target = '_blank'; a.rel = 'noopener';
-        a.textContent = it.link || 'open';
-        li.appendChild(a);
-      } else if (it.jump) {
-        const j = document.createElement('button');
-        j.type = 'button'; j.className = 'ov-jump';
-        j.textContent = it.link || 'open';
-        j.addEventListener('click', (e) => {
-          e.stopPropagation();
-          const target = document.getElementById(it.jump);
-          const sec = target && target.closest('section.slide');
-          const idx = sec ? Array.from(this.p.slides).indexOf(sec) : -1;
-          if (idx < 0) return;
-          this.closeFan(false);
-          this.close();
-          this.p.goTo(idx);
-        });
-        li.appendChild(j);
-      }
-      ul.appendChild(li);
-    });
+    items.forEach(it => ul.appendChild(this.buildPrepLine(it)));
     d.appendChild(ul);
+    /* A small Open list button for anyone who does not know the card itself
+       is tappable (Igor, 27 Sep 2026). */
+    const openBtn = document.createElement('button');
+    openBtn.type = 'button';
+    openBtn.className = 'ov-prep-open';
+    openBtn.textContent = 'Open list';
+    openBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (e.detail > 0) openBtn.blur();
+      this.openPrepZoom(d);
+    });
+    d.appendChild(openBtn);
+    /* A tap anywhere on the card body opens the panel, except a tick box or a
+       link button, which keep doing their own job (Igor, 27 Sep 2026). */
+    d.addEventListener('click', (e) => {
+      if (e.target.closest('.ov-tick, .ov-link, .ov-jump, .ov-prep-open')) return;
+      this.openPrepZoom(d);
+    });
+    d.addEventListener('keydown', (e) => {
+      if (e.target !== d || (e.key !== 'Enter' && e.key !== ' ')) return;
+      e.preventDefault();
+      this.openPrepZoom(d);
+    });
     return d;
+  }
+  /* The same items, drawn again for the full size panel. */
+  buildPrepZoomList(items) {
+    if (!this.prepZoomList) return;
+    items.forEach(it => this.prepZoomList.appendChild(this.buildPrepLine(it)));
+  }
+  isPrepZoomOpen() { return !!this.prepZoom && this.prepZoom.classList.contains('open'); }
+  /* Belt and braces alongside navBlocked(): BACK, NEXT and the picker button go
+     properly disabled while the panel is open, so nothing can reach next(),
+     prev() or picker.open() through them, pointer or otherwise. RUNTIME_STRIP
+     already clears #navPrev and #navNext's disabled attribute on export;
+     #navPicker's joins them for the same reason. */
+  setNavDisabled(on) {
+    ['navPrev', 'navNext', 'navPicker'].forEach(id => {
+      const b = document.getElementById(id);
+      if (b) b.disabled = on;
+    });
+    if (!on && window.deck && window.deck.nav && window.deck.nav.refresh) window.deck.nav.refresh();
+  }
+  openPrepZoom(opener) {
+    if (!this.prepZoom || this.isPrepZoomOpen()) return;
+    this.prepOpener = opener || document.activeElement;
+    this.prepZoom.classList.add('open');
+    document.body.classList.add('prep-zoom-open');
+    this.setNavDisabled(true);
+    if (this.prepZoomClose) this.prepZoomClose.focus();
+  }
+  closePrepZoom() {
+    if (!this.isPrepZoomOpen()) return;
+    this.prepZoom.classList.remove('open');
+    document.body.classList.remove('prep-zoom-open');
+    this.setNavDisabled(false);
+    if (this.prepOpener && this.prepOpener.focus && this.prepOpener.offsetParent) this.prepOpener.focus();
+    this.prepOpener = null;
   }
   line(label, text) {
     const p = document.createElement('span');
@@ -4204,6 +4411,7 @@ class DeckOverview {
   }
   close() {
     if (!this.isOpen()) return;
+    this.closePrepZoom();   /* belt and braces: the panel never outlives the Overview it sits over */
     this.closeFan(false);
     this.wrap.classList.remove('open');
     document.body.classList.remove('overview-open');
