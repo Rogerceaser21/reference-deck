@@ -1985,6 +1985,256 @@ ul.plain li::before { color:var(--p-i-ink); }
   </div>
 </section>
 
+<!-- ===========================================
+     BRAIN BREAK BANK
+     Six ready slides, held inert inside <template id="brainBreakBank"> so the
+     lesson run, the Overview, slide numbers, the sweep and the timer groups
+     never see them: a <template>'s content is not part of the live document,
+     so it is never matched by document.querySelectorAll('.slide') and RUNTIME_STRIP
+     has nothing to strip here. Rules are word for word from
+     lesson-pipeline-v2/kb/brain-breaks.md; a build copies only the slides it picks
+     into the lesson run it is building, exactly as the sheet template is copied
+     and adapted, never linked to live.
+     The picker order below is Igor's own: This or That, Four Corners, Boi-ing 7,
+     Look Down Look Up, Bang Circle, Heads or Tails.
+     =========================================== -->
+<style id="bbBankStyle">
+/* The bank's own tiny styling. Theme tokens only, nothing hard coded. */
+.bb-pairs { list-style:none; display:flex; flex-direction:column; gap:var(--element-gap); margin:0; padding:0; }
+.bb-pairs li { background:var(--panel-2); padding:0.4em 0.85em; font-family:var(--font-body);
+  font-size:var(--body-size); line-height:1.4; color:var(--mist); border:var(--px) solid var(--edge); }
+</style>
+<template id="brainBreakBank">
+
+<!-- Brain break bank: This or That -->
+<section class="slide g-grassy" data-timer="180" data-notes="&lt;strong&gt;This or That, 3 minutes.&lt;/strong&gt; Everyone lines up in a straight line across the middle of the room. Read out a pair, straight off the list below, or one of your own. &lt;strong&gt;Give 3 to 5 seconds to decide and step, then call the next pair straight away.&lt;/strong&gt; 5 to 10 prompts is plenty, more if they are still engaged.">
+  <div class="slide-content" style="max-width:min(96vw,2400px)">
+    <p class="eyebrow reveal">// brain_break_bank &middot; this_or_that</p>
+    <h2 class="reveal" style="margin-bottom:calc(var(--element-gap) * 0.5)">This or That</h2>
+    <div class="two-col" style="align-items:start">
+      <div>
+        <ul class="plain" style="gap:calc(var(--element-gap) * 0.3)">
+          <li class="reveal">Students line up in a straight line across the middle of the room.</li>
+          <li class="reveal">Teacher reads out two choices, like "Chocolate or Vanilla."</li>
+          <li class="reveal">Students who choose the first option, step to the left.</li>
+          <li class="reveal">Students who choose the second option, step to the right.</li>
+          <li class="reveal">Call out fun or themed "This or That" pairs (for example "Beach or Mountains", "Sweet or Salty"). Give students 3 to 5 seconds to decide and step.</li>
+        </ul>
+        <p class="eyebrow reveal" style="margin-top:calc(var(--element-gap) * 0.55)">// this lesson's pairs</p>
+        <ul class="plain bb-pairs" data-bb-pairs style="gap:calc(var(--element-gap) * 0.3)">
+          <li class="reveal">Apple or Android?</li>
+          <li class="reveal">Laptop or tablet?</li>
+          <li class="reveal">Windows or macOS?</li>
+          <li class="reveal">Touchscreen or keyboard?</li>
+        </ul>
+        <p class="reveal" style="margin-top:calc(var(--element-gap) * 0.5)"><span class="chip red">3 minutes</span></p>
+      </div>
+      <div class="col-img picfig reveal" style="">
+        <img class="photo" src="assets/bb-this-or-that.png" alt="The school's This or That brain break card: students line up across the room, the teacher calls a pair, and each side of the room is one choice">
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Brain break bank: Four Corners -->
+<section class="slide g-grassy" data-timer="180" data-prep="Four card suits, one taped in each corner of IG04." data-notes="&lt;strong&gt;Four Corners, 3 minutes.&lt;/strong&gt; Everyone up, choose a corner, no talking. &lt;strong&gt;The four suit cards are taped in the corners of the room. Tap DRAW A CARD on the slide, so no pack and no phone are needed.&lt;/strong&gt; Keep playing until only one student is left.">
+  <div class="slide-content" style="max-width:min(96vw,2400px)">
+    <p class="eyebrow reveal">// brain_break_bank &middot; four_corners</p>
+    <h2 class="reveal" style="margin-bottom:calc(var(--element-gap) * 0.5)">Four Corners</h2>
+    <div class="two-col" style="align-items:start">
+      <div>
+        <ul class="plain" style="gap:calc(var(--element-gap) * 0.35)">
+          <li class="reveal">Each corner of the room has a card suit symbol: Spades, Hearts, Diamonds, Clubs.</li>
+          <li class="reveal">Everyone quietly chooses a corner to stand in.</li>
+          <li class="reveal">The teacher draws a card, either from a deck of cards, or by scanning the QR code to use an online card drawing app.</li>
+          <li class="reveal">The teacher announces the suit on the card (for example "Clubs!").</li>
+          <li class="reveal">Everyone standing in that corner is out and must sit down.</li>
+          <li class="reveal">The rest of the students choose a new corner for the next round.</li>
+          <li class="reveal">Keep playing until only one student is left: they are the winner!</li>
+        </ul>
+        <p class="reveal" style="margin-top:calc(var(--element-gap) * 0.5)"><span class="chip red">3 minutes</span> &nbsp; <span class="chip dark">tap the card, no pack and no phone needed</span></p>
+      </div>
+      <div class="col-img reveal" style="display:flex; flex-direction:column; align-items:center; gap:var(--element-gap); min-width:0">
+        <div class="picfig" style="">
+          <img class="photo" src="assets/bb-four-corners.png" alt="The school's Four Corners brain break card: a suit symbol in each corner of the room, the teacher draws a card and that corner sits down">
+        </div>
+        <div class="coin-row" style="align-items:center">
+          <div class="coin-slot">
+            <button class="coin" id="cardBtn" type="button" aria-label="Draw a card">
+              <span class="coin-inner" id="cardInner">
+                <span class="coin-face" id="cardFaceA">DRAW</span>
+                <span class="coin-face tails" id="cardFaceB">DRAW</span>
+              </span>
+            </button>
+            <span class="coin-out" id="cardOut"></span>
+          </div>
+          <div class="coin-slot" style="justify-content:center">
+            <button class="flip-both" id="cardAgain" type="button">DRAW A CARD</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Brain break bank: Boi-ing 7 -->
+<section class="slide g-grassy" data-timer="180" data-notes="&lt;strong&gt;Boi-ing 7, 3 minutes.&lt;/strong&gt; Everyone stands in a circle facing inwards. Nominate a student to start on &quot;one&quot; and go round the circle. &lt;strong&gt;Any number with a 7 in it, or a multiple of 7, is &quot;boi-ing&quot; instead of the number.&lt;/strong&gt; A wrong call restarts the count from one.">
+  <div class="slide-content" style="max-width:min(96vw,2400px)">
+    <p class="eyebrow reveal">// brain_break_bank &middot; boi_ing_7</p>
+    <h2 class="reveal" style="margin-bottom:calc(var(--element-gap) * 0.5)">Boi-ing 7</h2>
+    <div class="two-col" style="align-items:start">
+      <div>
+        <ul class="plain" style="gap:calc(var(--element-gap) * 0.35)">
+          <li class="reveal">Students stand in a circle facing inwards.</li>
+          <li class="reveal">A nominated student begins by saying "one".</li>
+          <li class="reveal">The student to the left of the one says "two" and so on around the circle, calling out numbers in numerical order.</li>
+          <li class="reveal">Every time a number comes along that contains a "7" or is a multiple of 7, students must call out "boi-ing" (a jumping sound because "7" is being jumped) in place of the actual number. Counting then continues as normal until the next "7".</li>
+        </ul>
+        <p class="reveal" style="margin-top:calc(var(--element-gap) * 0.5)"><span class="chip red">3 minutes</span></p>
+      </div>
+      <div class="col-img picfig reveal" style="">
+        <img class="photo" src="assets/bb-boi-ing-7.png" alt="The school's Boi-ing 7 brain break card: a circle counting up, calling boi-ing on any number with a 7 or a multiple of 7">
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Brain break bank: Look Down, Look Up -->
+<section class="slide g-grassy" data-timer="180" data-notes="&lt;strong&gt;Look Down, Look Up, 3 minutes.&lt;/strong&gt; Groups of about 10 to 12 in a circle, all looking down at a small object in the middle. &lt;strong&gt;Call &quot;Look Up&quot;: anyone whose chosen person is also looking at them, both step out.&lt;/strong&gt; Then &quot;Look Down&quot; again, and repeat until one or two are left.">
+  <div class="slide-content" style="max-width:min(96vw,2400px)">
+    <p class="eyebrow reveal">// brain_break_bank &middot; look_down_look_up</p>
+    <h2 class="reveal" style="margin-bottom:calc(var(--element-gap) * 0.5)">Look Down, Look Up</h2>
+    <div class="two-col" style="align-items:start">
+      <div>
+        <ul class="plain" style="gap:calc(var(--element-gap) * 0.3)">
+          <li class="reveal">Students stand in a circle facing inwards.</li>
+          <li class="reveal">Groups of approximately 10 to 12 are ideal.</li>
+          <li class="reveal">Students stare at a small object placed on the floor in the middle of the circle.</li>
+          <li class="reveal">Each student decides on a person that they will directly look at when instructed to "Look Up".</li>
+          <li class="reveal">If they find that this person has also chosen them and is looking directly at them, then both students step out of the circle. After each turn, students are asked to "Look Down".</li>
+          <li class="reveal">They return their gaze to the floor and decide whom they will look at as they await the next call of "Look Up". Play continues until only one or two players remain.</li>
+        </ul>
+        <p class="reveal" style="margin-top:calc(var(--element-gap) * 0.5)"><span class="chip red">3 minutes</span></p>
+      </div>
+      <div class="col-img picfig reveal" style="">
+        <img class="photo" src="assets/bb-look-down-look-up.png" alt="The school's Look Down, Look Up brain break card: a circle looking down at an object, then looking up to see who chose them">
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Brain break bank: Bang Circle -->
+<section class="slide g-grassy" data-timer="180" data-notes="&lt;strong&gt;Bang Circle, 3 minutes.&lt;/strong&gt; Everyone in a circle facing inward, you (or a chosen student) in the middle as the caller. &lt;strong&gt;Call names fast and keep it moving.&lt;/strong&gt; Play down to a final two for the last dramatic showdown.">
+  <div class="slide-content" style="max-width:min(96vw,2400px)">
+    <p class="eyebrow reveal">// brain_break_bank &middot; bang_circle</p>
+    <h2 class="reveal" style="margin-bottom:calc(var(--element-gap) * 0.5)">Bang Circle</h2>
+    <div class="two-col" style="align-items:start">
+      <div>
+        <ul class="plain" style="gap:calc(var(--element-gap) * 0.35)">
+          <li class="reveal">All students stand in a circle facing inward. One person (usually the teacher or chosen student) stands in the middle of the circle. They are the caller. The caller quickly says the name of a student in the circle.</li>
+          <li class="reveal">That named student must immediately duck down (crouch or squat). At the same time, the two students on either side of the ducking student turn to face each other and shout "BANG!" while pointing finger guns.</li>
+          <li class="reveal">The first to say "BANG!" wins the duel. The slower one is out and must sit down or leave the circle. If the student in the middle ducks too slowly or ducks when they are not named, they are out.</li>
+          <li class="reveal">The last two students left can have a final dramatic "BANG" showdown in the centre of the circle.</li>
+        </ul>
+        <p class="reveal" style="margin-top:calc(var(--element-gap) * 0.5)"><span class="chip red">3 minutes</span></p>
+      </div>
+      <div class="col-img picfig reveal" style="">
+        <img class="photo" src="assets/bb-bang-circle.png" alt="The school's Bang Circle brain break card: a circle facing inward, the caller in the middle, the named student ducks and the two beside them shout BANG">
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Brain break bank: Heads or Tails -->
+<section class="slide g-grassy" data-timer="180" data-notes="&lt;strong&gt;Heads or Tails, 3 minutes.&lt;/strong&gt; Everyone up in the middle of the room. Say &quot;Choose heads or tails!&quot;, hands on head for heads, hands on hips for tails. &lt;strong&gt;Tap the coin on the slide, then call the result.&lt;/strong&gt; Wrong guesses sit down. Keep playing until only one student is left standing.">
+  <div class="slide-content" style="max-width:min(96vw,2400px)">
+    <p class="eyebrow reveal">// brain_break_bank &middot; heads_or_tails</p>
+    <h2 class="reveal" style="margin-bottom:calc(var(--element-gap) * 0.5)">Heads or Tails</h2>
+    <div class="two-col" style="align-items:start">
+      <div>
+        <ul class="plain" style="gap:calc(var(--element-gap) * 0.3)">
+          <li class="reveal">Everyone stands up in the middle of the room.</li>
+          <li class="reveal">The teacher says, "Choose heads or tails!" Students show their guess using an action: Heads, hands on your head, or Tails, hands on your hips.</li>
+          <li class="reveal">The teacher flips the coin, either using a real coin, or by scanning the QR code and flipping virtually.</li>
+          <li class="reveal">The teacher calls out the result (for example "Tails!").</li>
+          <li class="reveal">Students who guessed wrong sit down.</li>
+          <li class="reveal">The rest stay standing and get ready for the next round.</li>
+          <li class="reveal">Keep playing until only one student is left standing: they are the winner!</li>
+        </ul>
+        <p class="reveal" style="margin-top:calc(var(--element-gap) * 0.5)"><span class="chip red">3 minutes</span> &nbsp; <span class="chip dark">tap the coin, no real coin or phone needed</span></p>
+      </div>
+      <div class="col-img reveal" style="display:flex; flex-direction:column; align-items:center; gap:var(--element-gap); min-width:0">
+        <div class="picfig" style="">
+          <img class="photo" src="assets/bb-heads-or-tails.png" alt="The school's Heads or Tails brain break card: hands on your head for heads, hands on your hips for tails, and a wrong guess sits down">
+        </div>
+        <div class="coin-row" style="align-items:center">
+          <div class="coin-slot">
+            <button class="coin" id="bbCoinBtn" type="button" aria-label="Flip the coin">
+              <span class="coin-inner" id="bbCoinInner">
+                <span class="coin-face">HEADS</span>
+                <span class="coin-face tails">TAILS</span>
+              </span>
+            </button>
+            <span class="coin-out" id="bbCoinOut"></span>
+          </div>
+          <div class="coin-slot" style="justify-content:center">
+            <button class="flip-both" id="bbCoinAgain" type="button">FLIP THE COIN</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+</template>
+<script>
+/* ===========================================
+   BRAIN BREAK BANK: the ?bank bootstrap.
+   Runs at parse time, before the deck engine's own main script block boots, so
+   presentation.slides, the Overview, the sweep and the timer groups are built
+   against whichever DOM is here when THEY run. With ?bank on the address, the
+   bank's six slides are cloned in, in place of the lesson run, and the lesson's
+   own 25 slides are taken out; without ?bank this whole block is a no-op and
+   nothing here is ever touched.
+   =========================================== */
+(function () {
+  try {
+    if (!/(^|[?&])bank(=|&|$)/.test(location.search)) return;
+    var tpl = document.getElementById('brainBreakBank');
+    if (!tpl) return;
+    var oldSlides = Array.prototype.slice.call(document.querySelectorAll('section.slide'));
+    if (!oldSlides.length) return;
+    var anchor = oldSlides[0];
+    var frag = tpl.content.cloneNode(true);
+    anchor.parentNode.insertBefore(frag, anchor);
+    oldSlides.forEach(function (s) { s.parentNode.removeChild(s); });
+
+    /* Heads or Tails: one coin, built in slide (root rule 10), ported from the
+       Coin class of g10-week3-lesson1.html's Heads or Tails brain break. Kept
+       inside this IIFE with ids prefixed bb, so it never shares a name with the
+       main script's own CoinPair/Coin classes below. */
+    var btn = document.getElementById('bbCoinBtn');
+    if (btn) {
+      var inner = document.getElementById('bbCoinInner');
+      var out = document.getElementById('bbCoinOut');
+      var rot = 0, spinTimer = null;
+      var flip = function () {
+        var heads = Math.random() < 0.5;
+        var spins = 4 + Math.floor(Math.random() * 3);
+        rot += spins * 360 + (heads ? 0 : 180) - (rot % 360);
+        inner.style.transform = 'rotateY(' + rot + 'deg)';
+        out.textContent = '...';
+        clearTimeout(spinTimer);
+        spinTimer = setTimeout(function () { out.textContent = heads ? 'HEADS' : 'TAILS'; }, 1650);
+      };
+      btn.addEventListener('click', flip);
+      var again = document.getElementById('bbCoinAgain');
+      if (again) again.addEventListener('click', flip);
+    }
+  } catch (e) {}
+})();
+</script>
+
 
 <!-- ===========================================
      THE STUDENT SHEET
