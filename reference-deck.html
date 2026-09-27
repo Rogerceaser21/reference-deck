@@ -500,6 +500,16 @@ ul.plain li::before { content:"\25B8  "; color:var(--p-i); font-weight:800; }
   overflow:hidden; pointer-events:none !important; opacity:0 !important; }
 @media (max-width:900px) { .cfu-panel { max-width:min(72%, 520px); } }
 
+/* data-chip-cover: while a chip's panel is open on a slide that declares it, the
+   revealed content fades so the room reads the question rather than the answer
+   already on screen (deck law, The CFU and Question chips). Every direct child of
+   .slide-content dims except the heading (eyebrow, h1, h2) and the chip's own rail,
+   panel and marker, which stay exactly as they are. Closing every panel restores it. */
+.slide[data-chip-cover] > .slide-content > :not(.eyebrow):not(h1):not(h2):not(.chip-rail):not(.cfu-panel):not(.chip-mark) {
+  transition:opacity .25s var(--ease-out-expo, ease); }
+.slide[data-chip-cover].chip-cover-active > .slide-content > :not(.eyebrow):not(h1):not(h2):not(.chip-rail):not(.cfu-panel):not(.chip-mark) {
+  opacity:0.15; }
+
 /* ---- RING STEPS ----
    A sheet slot may walk its rings through several steps on NEXT
    (data-ring-steps="b5:gold|b6:gold|b7:gold"). Each step after the first owns one
@@ -1409,7 +1419,7 @@ ul.plain li::before { color:var(--p-i-ink); }
      slides, point 7). There is no intro element in this lesson at all. -->
 
 <!-- 4 · The Do Now answers checked: three warning signs, one at a time -->
-<section data-element="donow" class="slide g-well" data-cfu="Name one of the three warning signs that give a scam away, and say how it gives it away. || Draw a name with the Random Name Picker, hands stay down, three seconds of Wait Time, then reveal that sign. One student from three different tables, so the check crosses the room. Then read the answer out from one sheet. || Retrieval from last lesson, not one of today&#x27;s success criteria." data-q="Is a message that knows your name proof it is real? || Take the answer, then name it out loud: knowing your name is not proof of anything. || Retrieval from last lesson." data-notes="&lt;strong&gt;Previously learned, 14:08 to 14:11, about 3 minutes. This is where the Do Now answers get checked, not a new teach.&lt;/strong&gt; &lt;strong&gt;Draw a name with the Random Name Picker, hands stay down, three seconds of Wait Time, then reveal that sign.&lt;/strong&gt; One student from three different tables, so the check crosses the room. &lt;span class='tag cfu'&gt;CFU&lt;/span&gt; &lt;strong&gt;Then read the answer out from one sheet.&lt;/strong&gt; &lt;strong&gt;Misconception to name:&lt;/strong&gt; a message that knows your name is not proof it is real.">
+<section data-element="donow" class="slide g-well" data-chip-first data-cfu="Name one of the three warning signs that give a scam away, and say how it gives it away. || Draw a name with the Random Name Picker, hands stay down, three seconds of Wait Time, then reveal that sign. One student from three different tables, so the check crosses the room. Then read the answer out from one sheet. || Retrieval from last lesson, not one of today&#x27;s success criteria." data-q="Is a message that knows your name proof it is real? || Take the answer, then name it out loud: knowing your name is not proof of anything. || Retrieval from last lesson." data-notes="&lt;strong&gt;Previously learned, 14:08 to 14:11, about 3 minutes. This is where the Do Now answers get checked, not a new teach.&lt;/strong&gt; &lt;strong&gt;Draw a name with the Random Name Picker, hands stay down, three seconds of Wait Time, then reveal that sign.&lt;/strong&gt; One student from three different tables, so the check crosses the room. &lt;span class='tag cfu'&gt;CFU&lt;/span&gt; &lt;strong&gt;Then read the answer out from one sheet.&lt;/strong&gt; &lt;strong&gt;Misconception to name:&lt;/strong&gt; a message that knows your name is not proof it is real.">
   <div class="slide-content" style="max-width:min(96vw,2400px)">
     <p class="eyebrow reveal">// check · do_now · say it before it lands</p>
     <h2 class="reveal" style="margin-bottom:calc(var(--element-gap) * 0.4)">What did you write?</h2>
@@ -1660,7 +1670,7 @@ ul.plain li::before { color:var(--p-i-ink); }
 
 <!-- 17 · Lesson 1: the teaching, after the experience rather than before it. The check for
      understanding rides on this slide as a CFU chip: NEXT opens it once the reveals are out. -->
-<section data-element="lap1" class="slide g-well" data-q="Is reporting the same as telling tales? || Take two answers, then say it plainly: reporting is what you do when someone will not stop, and it goes to the game and to an adult here. || Success Criteria 2: explain what to do when someone is mean to you online" data-cfu="Name one move you make when someone is mean to you online, and say why. || Two names from the Random Name Picker, hands stay down, three seconds of Wait Time after each name. Then Show Call: hold up one debrief sentence and read it out. Then Building Ratio: a third student says what the Bystander could have done. || Success Criteria 2 and 3" data-notes="&lt;strong&gt;The teaching, 14:43 to 14:46, about 3 minutes. It lands after the role play, not before it.&lt;/strong&gt; Read the definition, then the four moves in order, then the two lines under them. &lt;strong&gt;Say plainly: report it to the game and tell an adult here. We do not use an Australian reporting service.&lt;/strong&gt; &lt;strong&gt;Misconceptions to catch:&lt;/strong&gt; reporting is telling tales; ignoring always works, whoever is doing it; a chat message is gone once you close the game; if you only watched, you were not part of it. &lt;strong&gt;Check for understanding 1, 14:46 to 14:49, on the CFU chip at the right edge: NEXT opens it once the reveals are out. Success Criteria 2 and 3.&lt;/strong&gt;">
+<section data-element="lap1" class="slide g-well" data-chip-cover data-q="Is reporting the same as telling tales? || Take two answers, then say it plainly: reporting is what you do when someone will not stop, and it goes to the game and to an adult here. || Success Criteria 2: explain what to do when someone is mean to you online" data-cfu="Name one move you make when someone is mean to you online, and say why. || Two names from the Random Name Picker, hands stay down, three seconds of Wait Time after each name. Then Show Call: hold up one debrief sentence and read it out. Then Building Ratio: a third student says what the Bystander could have done. || Success Criteria 2 and 3" data-notes="&lt;strong&gt;The teaching, 14:43 to 14:46, about 3 minutes. It lands after the role play, not before it.&lt;/strong&gt; Read the definition, then the four moves in order, then the two lines under them. &lt;strong&gt;Say plainly: report it to the game and tell an adult here. We do not use an Australian reporting service.&lt;/strong&gt; &lt;strong&gt;Misconceptions to catch:&lt;/strong&gt; reporting is telling tales; ignoring always works, whoever is doing it; a chat message is gone once you close the game; if you only watched, you were not part of it. &lt;strong&gt;Check for understanding 1, 14:46 to 14:49, on the CFU chip at the right edge: NEXT opens it once the reveals are out. Success Criteria 2 and 3.&lt;/strong&gt;">
   <div class="slide-content" style="max-width:min(97vw,2500px)">
     <p class="eyebrow reveal">// what_it_is · what_you_do</p>
     <h2 class="reveal" style="margin-bottom:calc(var(--element-gap) * 0.4)">What cyberbullying is, and what you do</h2>
@@ -1775,7 +1785,7 @@ ul.plain li::before { color:var(--p-i-ink); }
 
 <!-- 22 · Lesson 2 part 2, second half: play, and the Good Game Guide. The check for
      understanding rides on this slide as a CFU chip: NEXT opens it once the reveals are out. -->
-<section data-element="lap2" class="slide g-well" data-timer="720" data-timer-group="play" data-cfu="Name one problem you met in Good Game, and which tool you chose. || Two names from the picker, hands stay down, three seconds of Wait Time each. Then Show Call: hold up one sheet and read the answer out. Then Building Ratio: a third student says what would have gone wrong with a different tool. || Success Criteria 1" data-notes="&lt;strong&gt;Still the same 12 minute clock. Circulate the whole time.&lt;/strong&gt; &lt;strong&gt;Say it out loud: the publisher gives 45 minutes for the whole world, so nobody is expected to finish today.&lt;/strong&gt; &lt;strong&gt;Above Level:&lt;/strong&gt; after each scenario, name the tool you did not pick and say why it would have been worse. &lt;strong&gt;Below Level:&lt;/strong&gt; the four tools stay on screen the whole time. Tick names off the tracking sheet on the board as you go. &lt;strong&gt;Check for understanding 2, 15:06 to 15:09, on the CFU chip at the right edge: NEXT opens it once the reveals are out. Success Criteria 1.&lt;/strong&gt;">
+<section data-element="lap2" class="slide g-well" data-timer="720" data-timer-group="play" data-chip-cover data-cfu="Name one problem you met in Good Game, and which tool you chose. || Two names from the picker, hands stay down, three seconds of Wait Time each. Then Show Call: hold up one sheet and read the answer out. Then Building Ratio: a third student says what would have gone wrong with a different tool. || Success Criteria 1" data-notes="&lt;strong&gt;Still the same 12 minute clock. Circulate the whole time.&lt;/strong&gt; &lt;strong&gt;Say it out loud: the publisher gives 45 minutes for the whole world, so nobody is expected to finish today.&lt;/strong&gt; &lt;strong&gt;Above Level:&lt;/strong&gt; after each scenario, name the tool you did not pick and say why it would have been worse. &lt;strong&gt;Below Level:&lt;/strong&gt; the four tools stay on screen the whole time. Tick names off the tracking sheet on the board as you go. &lt;strong&gt;Check for understanding 2, 15:06 to 15:09, on the CFU chip at the right edge: NEXT opens it once the reveals are out. Success Criteria 1.&lt;/strong&gt;">
   <div class="slide-content" style="max-width:min(97vw,2500px)">
     <p class="eyebrow reveal">// good_game · play</p>
     <h2 class="reveal" style="margin-bottom:calc(var(--element-gap) * 0.4)">Play, and build your Good Game Guide</h2>
@@ -2065,7 +2075,7 @@ const RUNTIME_STRIP = {
           ['*', 'data-scribe-recorder-ready']],
   /* classes toggled at run time, as [selector, class] */
   classes: [['.slide', 'visible'], ['.slide', 'active'], ['*', 'fragment-visible'],
-            ['.slide', 'has-chips'], ['.ov-grid', 'seven'],
+            ['.slide', 'has-chips'], ['.slide', 'chip-cover-active'], ['.ov-grid', 'seven'],
             ['#isamsPop', 'show'], ['#speakerNotes', 'visible'],
             ['#overview', 'open'], ['#overview', 'fanned'], ['*', 'overview-open']],
   /* inline style properties measured at run time, as [selector, property] */
@@ -2298,6 +2308,38 @@ function setRingStep(slide, k) {
    separately. With both chips on a slide the CFU marker comes first, then the Q.
    Chips, panels and markers are runtime nodes: RUNTIME_STRIP takes them out of a
    Cmd+S export and slideCopy takes them out of an Overview tile.
+
+   data-chip-first: on a slide where the answer would otherwise reveal BEFORE the
+   check, this puts the CFU chip's own marker at fragment one instead of last, and
+   every other fragment on the slide (the answer reveals, any ring step, the Q
+   marker) shifts back to make room. NEXT then opens the question first and the
+   answer reveals follow it, in that order, by the clicker, the arrow keys, the
+   bottom bar and a tap alike, because it all still rides on data-fragment. A Q chip
+   on the same slide is not moved by this attribute: only "its CFU chip" (the rule)
+   goes first, so a slide with both keeps the Q where a plain slide would put it,
+   after the content.
+
+   data-chip-cover: on a slide where the taught content sits in front of the room
+   as plain reveals (not fragments the chip can get ahead of), the fix is not order
+   but cover. While ANY of the slide's panels is open, whichever chip opened it,
+   every child of .slide-content fades to about 15 percent opacity except the
+   heading (the eyebrow and the h2) and the chip's own rail and panel, so the room
+   reads the question rather than the answer sitting right there; closing the panel
+   (NEXT again, BACK, a second tap, Esc or a tap outside it) restores it to full.
+   The class this toggles, chip-cover-active, is a runtime class: RUNTIME_STRIP
+   takes it back out.
+   NOT combined with data-chip-first on the same slide: a CFU chip that opened
+   first stays open, on the marks-based rule above, through every answer reveal
+   that comes after it on that slide, right up to the moment a later chip's own
+   marker supersedes it. Slide 4 carries both a CFU and a Q, so its CFU panel
+   stays open across all three warning sign cards as they come out one by one
+   (proved on this build: the CFU panel does not close between them, it is
+   superseded only when the Q marker arrives). Covering that slide would fade
+   each card to 15 percent the moment it was revealed, hiding the very thing
+   NEXT just brought up, so slide 4 takes data-chip-first alone. Its Q's own
+   answer line sits in ordinary reveal text and is not covered by either
+   mechanism; that gap is named in the build's decision list, not silently
+   dropped.
    =========================================== */
 function chipParts(raw) {
   const bits = String(raw || '').split('||').map(x => x.trim());
@@ -2317,8 +2359,26 @@ function buildChips(picker) {
     const rail = document.createElement('div');
     rail.className = 'chip-rail';
     host.appendChild(rail);
-    const base = maxFragment(slide);       /* ring step markers are already in place */
+    /* data-chip-first: the CFU chip's own marker goes to fragment one instead of
+       last, and every fragment already on the slide (the answer reveals, a ring
+       step, a Q marker still to be built) shifts back by one to make room, so
+       the question opens before anything it would otherwise give away. A Q chip
+       on the same slide is NOT moved: only "its CFU chip" goes first (the rule),
+       so Q keeps the ordinary after-the-content place a plain slide gives it. */
+    const chipFirst = slide.hasAttribute('data-chip-first');
+    let firstCount = 0;
+    if (chipFirst) {
+      specs.forEach(s => { if (s.kind === 'cfu') firstCount++; });
+      if (firstCount) {
+        slide.querySelectorAll('[data-fragment]').forEach(el => {
+          const n = parseInt(el.dataset.fragment, 10);
+          if (isFinite(n)) el.dataset.fragment = String(n + firstCount);
+        });
+      }
+    }
+    const base = maxFragment(slide);       /* ring step markers, and any chip-first shift, are already in place */
     slide._chips = [];
+    let firstIdx = 0, trailingIdx = 0;
     specs.forEach((spec, i) => {
       const parts = chipParts(spec.raw);
       const tab = document.createElement('button');
@@ -2354,7 +2414,13 @@ function buildChips(picker) {
       const mark = document.createElement('span');
       mark.className = 'chip-mark';
       mark.setAttribute('aria-hidden', 'true');
-      mark.dataset.fragment = String(base + i + 1);
+      if (chipFirst && spec.kind === 'cfu') {
+        firstIdx++;
+        mark.dataset.fragment = String(firstIdx);
+      } else {
+        trailingIdx++;
+        mark.dataset.fragment = String(base + trailingIdx);
+      }
       host.appendChild(mark);
 
       const chip = { tab: tab, panel: panel, mark: mark, preview: false };
@@ -2396,6 +2462,13 @@ function syncChips() {
       chip.tab.classList.toggle('is-open', open);
       chip.tab.setAttribute('aria-expanded', open ? 'true' : 'false');
     });
+    /* data-chip-cover: whichever chip is open (CFU or Q, a step or a preview),
+       the slide's own revealed content fades so the room reads the question
+       rather than the answer already sitting on screen; closing every panel
+       restores it. Runtime class, RUNTIME_STRIP takes it back out. */
+    if (slide.hasAttribute('data-chip-cover')) {
+      slide.classList.toggle('chip-cover-active', at !== -1);
+    }
   });
 }
 /* A preview belongs to the moment, not to the slide: leaving the slide, pressing Esc
@@ -4033,7 +4106,7 @@ class DeckOverview {
      everything that could run, focus or be looked up by id taken out of it. */
   slideCopy(i) {
     const c = this.p.slides[i].cloneNode(true);
-    c.classList.remove('active', 'visible');
+    c.classList.remove('active', 'visible', 'chip-cover-active');
     ['id', 'data-hidden', 'data-notes', 'data-isams', 'data-timer', 'data-timer-group']
       .forEach(a => c.removeAttribute(a));
     Array.from(c.querySelectorAll('script')).forEach(s => s.remove());
