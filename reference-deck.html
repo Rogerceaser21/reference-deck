@@ -3431,7 +3431,15 @@ class SlidePresentation {
        the page's scroll flow the instant the class steps away from it. */
     if (this.isSideTrip(this.current)) this.slides[this.current].classList.remove('st-open');
     this.current = i;
-    if (this.isSideTrip(this.current)) this.slides[this.current].classList.add('st-open');
+    if (this.isSideTrip(this.current)) {
+      this.slides[this.current].classList.add('st-open');
+      /* A side trip is display:none until st-open lands, so fitPictures()
+         measured it at zero size at boot and baked in the PIC_MIN floor
+         (see fitPictures/fitAll). Now that display:flex just took effect,
+         refit before the class sees it, or the small size sits there until
+         a window resize happens to fire. */
+      if (typeof fitPictures === 'function') fitPictures();
+    }
     this.slides[this.current].querySelectorAll('[data-fragment]').forEach(f => f.classList.remove('fragment-visible'));
     this.slides[this.current].classList.add('active');
     this.beginProgrammaticNav(i);
@@ -3447,7 +3455,12 @@ class SlidePresentation {
     this.slides[this.current].classList.remove('active');
     if (this.isSideTrip(this.current)) this.slides[this.current].classList.remove('st-open');
     this.current = i;
-    if (this.isSideTrip(i)) this.slides[i].classList.add('st-open');
+    if (this.isSideTrip(i)) {
+      this.slides[i].classList.add('st-open');
+      /* Same boot-order fix as goTo(): a direct link straight into a break
+         needs its pictures measured now that the slide is actually shown. */
+      if (typeof fitPictures === 'function') fitPictures();
+    }
     this.slides[i].classList.add('active', 'visible');
     this.beginProgrammaticNav(i);
     this.slides[i].scrollIntoView({ behavior: 'auto', block: 'start' });
