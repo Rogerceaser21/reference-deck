@@ -55,6 +55,14 @@
   --ring-gold:var(--gold);
 
   --px:4px;               /* the pixel unit every bevel is built from */
+  /* the two bevel pairs every raised block on this deck is built from: a
+     shallow one for a panel (a card, a chip) and a deeper one for a button,
+     plus the text colour for anything sitting on an accent fill */
+  --bevel-panel-dark:rgba(0,0,0,.16);
+  --bevel-panel-light:rgba(255,255,255,.9);
+  --bevel-button-dark:rgba(0,0,0,.32);
+  --bevel-button-light:rgba(255,255,255,.4);
+  --on-accent:#fff;
 
   --font-display:'Press Start 2P', monospace;
   --font-label:'VT323', monospace;
@@ -2032,9 +2040,13 @@ ul.plain li::before { color:var(--p-i-ink); }
      deck opens that break, plays it, then comes back to the lesson exactly where it
      left off. The eight sections here are ordinary slides marked data-side-trip, so
      next(), prev(), the arrow keys, the on screen BACK and NEXT, Home and End, the nav
-     dots and the Overview all skip straight past them (SlidePresentation.isSideTrip());
-     they are only ever reached by a menu card, Pick for us, or a direct link. Rules are
-     word for word from lesson-pipeline-v2/kb/brain-breaks.md.
+     dots and the Overview all skip straight past them (SlidePresentation.isSideTrip()).
+     A side trip also carries no layout of its own (display:none in #bbBankStyle) until
+     goTo()/jumpTo() mark the one being opened with st-open, so it is not just skipped
+     by every button, it is not there for a wheel, a trackpad or any other native
+     scroll to land on either: the last lesson slide stays as hard an end as it was
+     before the bank existed. They are only ever reached by a menu card, Pick for us,
+     or a direct link. Rules are word for word from lesson-pipeline-v2/kb/brain-breaks.md.
      The card order on every menu is Igor's own: This or That, Four Corners, Boi-ing 7,
      Look Down, Look Up, Bang Circle, Heads or Tails, Silent Ball, Heads Down, Thumbs Up.
      Open the deck with ?bank on the address to walk the first menu and all eight breaks
@@ -2051,27 +2063,39 @@ ul.plain li::before { color:var(--p-i-ink); }
 .bb-card { display:flex; flex-direction:column; align-items:center; text-align:center; gap:clamp(3px,0.6vh,9px);
   min-height:0; min-width:0; background:var(--panel); color:var(--ink); border:0; cursor:pointer;
   padding:clamp(0.3rem,0.8vh,0.65rem);
-  box-shadow:inset calc(var(--px) * -1) calc(var(--px) * -1) 0 rgba(0,0,0,.16),
-             inset var(--px) var(--px) 0 rgba(255,255,255,.9);
-  transition:filter .15s ease, box-shadow .15s ease; }
+  box-shadow:inset calc(var(--px) * -1) calc(var(--px) * -1) 0 var(--bevel-panel-dark),
+             inset var(--px) var(--px) 0 var(--bevel-panel-light);
+  transition:filter .15s ease, box-shadow .15s ease, transform .15s ease; }
 .bb-card:hover { filter:brightness(0.95); }
 .bb-card:focus-visible { outline:3px solid var(--p-o); outline-offset:3px; }
 .bb-card-pic { flex:1 1 auto; min-height:0; width:100%; display:flex; overflow:hidden; }
 .bb-card-pic img { width:100%; height:100%; object-fit:cover; display:block; box-shadow:0 0 0 var(--px) var(--stone-dark); }
 .bb-card-name { flex:none; font-family:var(--font-display); font-size:var(--h3-size); line-height:1.2; }
 .bb-card-time { flex:none; }
-/* Pick for us: the live hop lands here and holds, before the break opens. */
-.bb-card.bb-pick-live { box-shadow:0 0 4px 2px var(--p-o),
-             inset calc(var(--px) * -1) calc(var(--px) * -1) 0 rgba(0,0,0,.16),
-             inset var(--px) var(--px) 0 rgba(255,255,255,.9); filter:brightness(0.95); }
+/* Pick for us: the live hop lands here and holds, before the break opens. A
+   thick outline plus a scale up, not just a glow, so the hop and the card it
+   lands on both read from the back of the room. */
+.bb-card.bb-pick-live { position:relative; z-index:2; transform:scale(1.08);
+  outline:clamp(4px,0.6vw,9px) solid var(--p-o); outline-offset:clamp(2px,0.3vw,5px);
+  box-shadow:inset calc(var(--px) * -1) calc(var(--px) * -1) 0 var(--bevel-panel-dark),
+             inset var(--px) var(--px) 0 var(--bevel-panel-light); filter:brightness(1.12); }
 .bb-pick-btn { align-self:center; flex:none; margin-top:calc(var(--element-gap) * 0.55); font-family:var(--font-display);
-  font-size:calc(clamp(0.72rem,1.5vw,1.1rem) * var(--font-scale)); background:var(--p-t); color:#fff; border:0;
+  font-size:calc(clamp(0.72rem,1.5vw,1.1rem) * var(--font-scale)); background:var(--p-t); color:var(--on-accent); border:0;
   padding:0.7em 1.4em; cursor:pointer;
-  box-shadow:inset calc(var(--px) * -1) calc(var(--px) * -1) 0 rgba(0,0,0,.32), inset var(--px) var(--px) 0 rgba(255,255,255,.4); }
+  box-shadow:inset calc(var(--px) * -1) calc(var(--px) * -1) 0 var(--bevel-button-dark), inset var(--px) var(--px) 0 var(--bevel-button-light); }
 .bb-pick-btn:hover { filter:brightness(1.08); }
 .bb-pick-btn:focus-visible { outline:3px solid var(--p-o); outline-offset:3px; }
 .bb-back { margin-top:calc(var(--element-gap) * 0.5); }
 @media (max-width:900px) { .bb-menu-grid { grid-template-columns:repeat(2, minmax(0,1fr)); grid-template-rows:repeat(4, minmax(0,1fr)); } }
+/* A side trip sits outside the page's own scroll flow until SlidePresentation
+   opens it (goTo()/jumpTo() add st-open on the one break being shown and take
+   it off again the moment the class leaves it), so there is nothing after the
+   last lesson slide for a wheel, a trackpad or any other native scroll to land
+   on, exactly as there was nothing before the bank existed. ?bank strips the
+   data-side-trip mark before any of this runs, so this rule never applies
+   there and the nine slides lay out as one ordinary run. */
+.slide[data-side-trip] { display:none; }
+.slide[data-side-trip].st-open { display:flex; }
 </style>
 
 <!-- Brain break bank: This or That -->
@@ -2563,7 +2587,7 @@ const RUNTIME_STRIP = {
             ['.slide', 'has-chips'], ['.slide', 'chip-cover-active'], ['.ov-grid', 'seven'],
             ['#isamsPop', 'show'], ['#speakerNotes', 'visible'],
             ['#overview', 'open'], ['#overview', 'fanned'], ['*', 'overview-open'],
-            ['#prepZoom', 'open'], ['*', 'prep-zoom-open'], ['.bb-card', 'bb-pick-live']],
+            ['#prepZoom', 'open'], ['*', 'prep-zoom-open'], ['.bb-card', 'bb-pick-live'], ['.slide', 'st-open']],
   /* inline style properties measured at run time, as [selector, property] */
   styleProps: [['*', '--pic-w'], ['*', '--font-scale'], ['*', '--slide-num-w'], ['*', '--chip-gutter'],
                ['*', '--hint-max'], ['*', '--nav-h'], ['.progress-bar', 'width'], ['#cursorFx', 'width'],
@@ -3403,7 +3427,11 @@ class SlidePresentation {
     if (i < 0 || i >= this.total || i === this.current) return;
     this.slides[this.current].querySelectorAll('[data-fragment]').forEach(f => f.classList.remove('fragment-visible'));
     this.slides[this.current].classList.remove('active');
+    /* Leaving a side trip takes st-open off it again, so it drops back out of
+       the page's scroll flow the instant the class steps away from it. */
+    if (this.isSideTrip(this.current)) this.slides[this.current].classList.remove('st-open');
     this.current = i;
+    if (this.isSideTrip(this.current)) this.slides[this.current].classList.add('st-open');
     this.slides[this.current].querySelectorAll('[data-fragment]').forEach(f => f.classList.remove('fragment-visible'));
     this.slides[this.current].classList.add('active');
     this.beginProgrammaticNav(i);
@@ -3417,7 +3445,9 @@ class SlidePresentation {
   jumpTo(i) {
     if (i < 0 || i >= this.total || i === this.current) return;
     this.slides[this.current].classList.remove('active');
+    if (this.isSideTrip(this.current)) this.slides[this.current].classList.remove('st-open');
     this.current = i;
+    if (this.isSideTrip(i)) this.slides[i].classList.add('st-open');
     this.slides[i].classList.add('active', 'visible');
     this.beginProgrammaticNav(i);
     this.slides[i].scrollIntoView({ behavior: 'auto', block: 'start' });
@@ -3546,8 +3576,26 @@ class SlidePresentation {
     }, { threshold: 0.55 });
     this.slides.forEach(s => io.observe(s));
   }
+  /* Every slide that is not a side trip, hidden or not: what this.total meant
+     before the bank ever added its eight, and still what the progress bar
+     counts over. */
+  lessonSlideCount() {
+    let n = 0;
+    for (let i = 0; i < this.total; i++) if (!this.isSideTrip(i)) n++;
+    return n;
+  }
   update() {
-    document.querySelector('.progress-bar').style.width = ((this.current + 1) / this.total * 100) + '%';
+    const onSideTrip = this.isSideTrip(this.current);
+    const lessonTotal = this.lessonSlideCount();
+    /* A side trip is not a lesson position of its own, so the bar holds at the
+       menu the class stepped out of instead of inventing one from its own
+       index (which would count the seven other breaks sitting after it). */
+    let barPos = this.current;
+    if (onSideTrip) {
+      const menu = (this.originMenuIndex !== null && this.isBBMenu(this.originMenuIndex)) ? this.originMenuIndex : this.findFirstMenu();
+      barPos = menu !== null ? menu : (lessonTotal - 1);
+    }
+    document.querySelector('.progress-bar').style.width = (lessonTotal ? ((barPos + 1) / lessonTotal * 100) : 100) + '%';
     this.dots.querySelectorAll('button').forEach((b) => {
       const i = parseInt(b.dataset.slideIndex, 10);
       b.classList.toggle('active', i === this.current);
@@ -3555,7 +3603,6 @@ class SlidePresentation {
     });
     const vis = this.visibleList();
     const cur = this.isHidden(this.current);
-    const onSideTrip = this.isSideTrip(this.current);
     const badge = document.getElementById('hiddenBadge');
     if (badge) badge.classList.toggle('show', cur);
     const hb = document.getElementById('hideSlideBtn');
