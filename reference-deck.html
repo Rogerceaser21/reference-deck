@@ -2244,7 +2244,7 @@ ul.plain li::before { color:var(--p-i-ink); }
 </section>
 
 <!-- Brain break bank: Heads or Tails -->
-<section class="slide g-grassy" data-side-trip data-bb-break="heads_or_tails" data-timer="180" data-notes="&lt;strong&gt;Heads or Tails, 3 minutes.&lt;/strong&gt; Everyone up in the middle of the room. Say &quot;Choose heads or tails!&quot;, hands on head for heads, hands on hips for tails. &lt;strong&gt;Tap the coin on the slide, then call the result.&lt;/strong&gt; Wrong guesses sit down. Keep playing until only one student is left standing.">
+<section class="slide g-grassy" data-side-trip data-bb-break="heads_or_tails" data-timer="180" data-notes="&lt;strong&gt;Heads or Tails, 3 minutes.&lt;/strong&gt; Everyone up in the middle of the room. Say &quot;Choose heads or tails!&quot;, hands on head for heads, hands on hips for tails. &lt;strong&gt;Two coins: tap FLIP BOTH on the slide (or tap one coin to flip it on its own), then call both results.&lt;/strong&gt; Students guess both coins, and have to get both right to stay standing. Keep playing until only one student is left standing.">
   <div class="slide-content" style="max-width:min(96vw,2400px)">
     <p class="eyebrow reveal">// brain_break_bank &middot; heads_or_tails</p>
     <h2 class="reveal" style="margin-bottom:calc(var(--element-gap) * 0.5)">Heads or Tails</h2>
@@ -2259,7 +2259,7 @@ ul.plain li::before { color:var(--p-i-ink); }
           <li class="reveal">The rest stay standing and get ready for the next round.</li>
           <li class="reveal">Keep playing until only one student is left standing: they are the winner!</li>
         </ul>
-        <p class="reveal" style="margin-top:calc(var(--element-gap) * 0.5)"><span class="chip red">3 minutes</span> &nbsp; <span class="chip dark">tap the coin, no real coin or phone needed</span></p>
+        <p class="reveal" style="margin-top:calc(var(--element-gap) * 0.5)"><span class="chip red">3 minutes</span> &nbsp; <span class="chip dark">two coins, no phone needed</span></p>
       </div>
       <div class="col-img reveal" style="display:flex; flex-direction:column; align-items:center; gap:var(--element-gap); min-width:0">
         <div class="picfig" style="">
@@ -2267,16 +2267,27 @@ ul.plain li::before { color:var(--p-i-ink); }
         </div>
         <div class="coin-row" style="align-items:center">
           <div class="coin-slot">
-            <button class="coin" id="bbCoinBtn" type="button" aria-label="Flip the coin">
-              <span class="coin-inner" id="bbCoinInner">
+            <span class="coin-name">COIN 1</span>
+            <button class="coin" id="coinA" type="button" aria-label="Flip coin 1">
+              <span class="coin-inner" id="coinAInner">
                 <span class="coin-face">HEADS</span>
                 <span class="coin-face tails">TAILS</span>
               </span>
             </button>
-            <span class="coin-out" id="bbCoinOut"></span>
+            <span class="coin-out" id="coinAOut"></span>
+          </div>
+          <div class="coin-slot">
+            <span class="coin-name">COIN 2</span>
+            <button class="coin" id="coinB" type="button" aria-label="Flip coin 2">
+              <span class="coin-inner" id="coinBInner">
+                <span class="coin-face">HEADS</span>
+                <span class="coin-face tails">TAILS</span>
+              </span>
+            </button>
+            <span class="coin-out" id="coinBOut"></span>
           </div>
           <div class="coin-slot" style="justify-content:center">
-            <button class="flip-both" id="bbCoinAgain" type="button">FLIP THE COIN</button>
+            <button class="flip-both" id="flipBoth" type="button">FLIP BOTH</button>
           </div>
         </div>
         <p class="reveal" style="margin-top:calc(var(--element-gap) * 0.5)"><button type="button" class="flip-both bb-back" data-bb-back>Back to the lesson</button></p>
@@ -2335,35 +2346,8 @@ ul.plain li::before { color:var(--p-i-ink); }
 </section>
 
 <script>
-/* ===========================================
-   HEADS OR TAILS: the coin, built in slide (root rule 10), ported from the Coin
-   class of g10-week3-lesson1.html's Heads or Tails brain break. Kept in its own
-   tiny IIFE with ids prefixed bb, so it never shares a name with the main
-   script's own CoinPair/Coin classes further down. It used to run only under
-   ?bank, when the bank's slides were cloned in from a <template>; the break is
-   now a live side trip every deck loads, so this always runs, ?bank or not.
-   =========================================== */
-(function () {
-  try {
-    var btn = document.getElementById('bbCoinBtn');
-    if (!btn) return;
-    var inner = document.getElementById('bbCoinInner');
-    var out = document.getElementById('bbCoinOut');
-    var rot = 0, spinTimer = null;
-    var flip = function () {
-      var heads = Math.random() < 0.5;
-      var spins = 4 + Math.floor(Math.random() * 3);
-      rot += spins * 360 + (heads ? 0 : 180) - (rot % 360);
-      inner.style.transform = 'rotateY(' + rot + 'deg)';
-      out.textContent = '...';
-      clearTimeout(spinTimer);
-      spinTimer = setTimeout(function () { out.textContent = heads ? 'HEADS' : 'TAILS'; }, 1650);
-    };
-    btn.addEventListener('click', flip);
-    var again = document.getElementById('bbCoinAgain');
-    if (again) again.addEventListener('click', flip);
-  } catch (e) {}
-})();
+/* HEADS OR TAILS: two coins (Igor, 28 Sep 2026). The slide uses ids coinA, coinB
+   and flipBoth, driven by the main script's CoinPair class further down. */
 
 /* ===========================================
    ?bank: isolate the menu and the eight breaks for review and screenshots.
@@ -2554,7 +2538,7 @@ ul.plain li::before { color:var(--p-i-ink); }
    The slides the teacher has hidden persist the same way, under their own version-keyed
    name, so a hide survives a refresh mid-lesson but never outlives a push.
    Everything else (font scale, iSAMS state, timers) stays session-only. */
-const DECK_VERSION = 'v20260928-111034';
+const DECK_VERSION = 'v20260928-125732';
 
 /* ===========================================
    RUNTIME_STRIP: everything the boot code builds or writes at run time.
