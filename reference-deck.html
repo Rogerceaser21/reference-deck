@@ -1782,44 +1782,54 @@ ul.plain li::before { color:var(--p-i-ink); }
   </div>
 </section>
 
-<!-- 19 · Brain break, end of Lesson 1: Four Corners, with the card draw built into the slide -->
-<section data-element="lap1" class="slide g-grassy" data-timer="180" data-timer-group="break1" data-prep="Four card suits, one taped in each corner of IG04." data-notes="&lt;strong&gt;Brain break, end of Lap 1, 14:49 to 14:52, 3 minutes.&lt;/strong&gt; Say it to start it: everyone up, choose a corner, no talking. &lt;strong&gt;The four suit cards are already taped in the corners of IG04. Tap DRAW A CARD on the slide, so no pack and no phone are needed.&lt;/strong&gt; &lt;strong&gt;If Lap 1 ran long, this is the first thing to shorten: two rounds instead of playing to a winner.&lt;/strong&gt;">
+<!-- 19 · Brain break menu, end of Lesson 1: the class picks -->
+<section data-element="lap1" class="slide g-grassy" data-bb-menu data-notes="&lt;strong&gt;Brain break, end of Lesson 1, about 3 minutes.&lt;/strong&gt; Tap a card to open that break, or tap Pick for us and let the deck choose one at random. &lt;strong&gt;Back to the lesson brings the class straight to the next slide once the break is done.&lt;/strong&gt;">
   <div class="slide-content" style="max-width:min(96vw,2400px)">
-    <p class="eyebrow reveal">// brain_break · end_of_lesson_1</p>
-    <h2 class="reveal" style="margin-bottom:calc(var(--element-gap) * 0.5)">Four Corners</h2>
-    <div class="two-col" style="align-items:start">
-      <div>
-        <ul class="plain" style="gap:calc(var(--element-gap) * 0.35)">
-          <li class="reveal">Each corner of the room has a card suit symbol: Spades, Hearts, Diamonds, Clubs.</li>
-          <li class="reveal">Everyone quietly chooses a corner to stand in.</li>
-          <li class="reveal">The teacher draws a card, either from a deck of cards, or by scanning the QR code to use an online card drawing app.</li>
-          <li class="reveal">The teacher announces the suit on the card (for example "Clubs!").</li>
-          <li class="reveal">Everyone standing in that corner is out and must sit down.</li>
-          <li class="reveal">The rest of the students choose a new corner for the next round.</li>
-          <li class="reveal">Keep playing until only one student is left: they are the winner!</li>
-        </ul>
-        <p class="reveal" style="margin-top:calc(var(--element-gap) * 0.5)"><span class="chip red">3 minutes</span> &nbsp; <span class="chip dark">tap the card, no pack and no phone needed</span></p>
-      </div>
-      <div class="col-img reveal" style="display:flex; flex-direction:column; align-items:center; gap:var(--element-gap); min-width:0">
-        <div class="picfig" style="">
-          <img class="photo" src="assets/bb-draw-four-corners.jpg" alt="A drawing of students standing in the four corners of a classroom, each corner marked with a card suit symbol.">
-        </div>
-        <div class="coin-row" style="align-items:center">
-          <div class="coin-slot">
-            <button class="coin" id="cardBtn" type="button" aria-label="Draw a card">
-              <span class="coin-inner" id="cardInner">
-                <span class="coin-face" id="cardFaceA">DRAW</span>
-                <span class="coin-face tails" id="cardFaceB">DRAW</span>
-              </span>
-            </button>
-            <span class="coin-out" id="cardOut"></span>
-          </div>
-          <div class="coin-slot" style="justify-content:center">
-            <button class="flip-both" id="cardAgain" type="button">DRAW A CARD</button>
-          </div>
-        </div>
-      </div>
+    <p class="eyebrow reveal">// brain_break &middot; end_of_lesson_1</p>
+    <h2 class="reveal" style="margin-bottom:calc(var(--element-gap) * 0.45)">Brain Break</h2>
+    <div class="bb-menu-grid reveal">
+      <button type="button" class="bb-card" data-bb-card="this_or_that">
+        <span class="bb-card-pic"><img src="assets/bb-draw-this-or-that.jpg" alt="A drawing of students lined up across a classroom, one side stepping left and the other stepping right for a This or That call."></span>
+        <span class="bb-card-name">This or That</span>
+        <span class="chip red bb-card-time">3 minutes</span>
+      </button>
+      <button type="button" class="bb-card" data-bb-card="four_corners">
+        <span class="bb-card-pic"><img src="assets/bb-draw-four-corners.jpg" alt="A drawing of students standing in the four corners of a classroom, each corner marked with a card suit symbol."></span>
+        <span class="bb-card-name">Four Corners</span>
+        <span class="chip red bb-card-time">3 minutes</span>
+      </button>
+      <button type="button" class="bb-card" data-bb-card="boi_ing_7">
+        <span class="bb-card-pic"><img src="assets/bb-draw-boi-ing-7.jpg" alt="A drawing of students standing in a circle counting around, jumping as they call boi-ing on a number with a seven in it."></span>
+        <span class="bb-card-name">Boi-ing 7</span>
+        <span class="chip red bb-card-time">3 minutes</span>
+      </button>
+      <button type="button" class="bb-card" data-bb-card="look_down_look_up">
+        <span class="bb-card-pic"><img src="assets/bb-draw-look-down-look-up.jpg" alt="A drawing of students in a circle looking down at an object on the floor, ready to look up on the call."></span>
+        <span class="bb-card-name">Look Down, Look Up</span>
+        <span class="chip red bb-card-time">3 minutes</span>
+      </button>
+      <button type="button" class="bb-card" data-bb-card="bang_circle">
+        <span class="bb-card-pic"><img src="assets/bb-draw-bang-circle.jpg" alt="A drawing of students in a circle with a caller in the middle, two students turning to shout Bang at each other."></span>
+        <span class="bb-card-name">Bang Circle</span>
+        <span class="chip red bb-card-time">3 minutes</span>
+      </button>
+      <button type="button" class="bb-card" data-bb-card="heads_or_tails">
+        <span class="bb-card-pic"><img src="assets/bb-draw-heads-or-tails.jpg" alt="A drawing of students standing with hands on their heads or their hips, choosing heads or tails before the coin flip."></span>
+        <span class="bb-card-name">Heads or Tails</span>
+        <span class="chip red bb-card-time">3 minutes</span>
+      </button>
+      <button type="button" class="bb-card" data-bb-card="silent_ball">
+        <span class="bb-card-pic"><img src="assets/bb-draw-silent-ball.jpg" alt="A drawing of students standing spread out in a classroom, passing a ball to each other in silence."></span>
+        <span class="bb-card-name">Silent Ball</span>
+        <span class="chip red bb-card-time">3 minutes</span>
+      </button>
+      <button type="button" class="bb-card" data-bb-card="heads_down_thumbs_up">
+        <span class="bb-card-pic"><img src="assets/bb-draw-heads-down-thumbs-up.jpg" alt="A drawing of students sitting with their heads down and thumbs raised, waiting to be tapped by a Tapper walking round the room."></span>
+        <span class="bb-card-name">Heads Down, Thumbs Up</span>
+        <span class="chip red bb-card-time">10 minutes</span>
+      </button>
     </div>
+    <button type="button" class="bb-pick-btn reveal" data-bb-pick>Pick for us</button>
   </div>
 </section>
 
@@ -1907,25 +1917,54 @@ ul.plain li::before { color:var(--p-i-ink); }
   </div>
 </section>
 
-<!-- 24 · Brain break, end of Lesson 2: Bang Circle -->
-<section data-element="lap2" class="slide g-grassy" data-timer="180" data-timer-group="break2" data-notes="&lt;strong&gt;Brain break, end of Lap 2, 15:09 to 15:12, 3 minutes.&lt;/strong&gt; Say it to start it: everyone up, one circle facing in, and you stand in the middle as the caller. &lt;strong&gt;Call names fast and keep it moving.&lt;/strong&gt; &lt;strong&gt;If the lesson is running behind, this is the one to drop, and go straight to the Exit Ticket.&lt;/strong&gt;">
+<!-- 24 · Brain break menu, end of Lesson 2: the class picks -->
+<section data-element="lap2" class="slide g-grassy" data-bb-menu data-notes="&lt;strong&gt;Brain break, end of Lesson 2, about 3 minutes.&lt;/strong&gt; Tap a card to open that break, or tap Pick for us and let the deck choose one at random. &lt;strong&gt;Back to the lesson brings the class straight to the next slide once the break is done.&lt;/strong&gt;">
   <div class="slide-content" style="max-width:min(96vw,2400px)">
-    <p class="eyebrow reveal">// brain_break · end_of_lesson_2</p>
-    <h2 class="reveal" style="margin-bottom:calc(var(--element-gap) * 0.5)">Bang Circle</h2>
-    <div class="two-col" style="align-items:start">
-      <div>
-        <ul class="plain" style="gap:calc(var(--element-gap) * 0.35)">
-          <li class="reveal">All students stand in a circle facing inward. One person (usually the teacher or chosen student) stands in the middle of the circle. They are the caller. The caller quickly says the name of a student in the circle.</li>
-          <li class="reveal">That named student must immediately duck down (crouch or squat). At the same time, the two students on either side of the ducking student turn to face each other and shout "BANG!" while pointing finger guns.</li>
-          <li class="reveal">The first to say "BANG!" wins the duel. The slower one is out and must sit down or leave the circle. If the student in the middle ducks too slowly or ducks when they are not named, they are out.</li>
-          <li class="reveal">The last two students left can have a final dramatic "BANG" showdown in the centre of the circle.</li>
-        </ul>
-        <p class="reveal" style="margin-top:calc(var(--element-gap) * 0.5)"><span class="chip red">3 minutes</span></p>
-      </div>
-      <div class="col-img picfig reveal" style="">
-        <img class="photo" src="assets/bb-draw-bang-circle.jpg" alt="A drawing of students in a circle with a caller in the middle, two students turning to shout Bang at each other.">
-      </div>
+    <p class="eyebrow reveal">// brain_break &middot; end_of_lesson_2</p>
+    <h2 class="reveal" style="margin-bottom:calc(var(--element-gap) * 0.45)">Brain Break</h2>
+    <div class="bb-menu-grid reveal">
+      <button type="button" class="bb-card" data-bb-card="this_or_that">
+        <span class="bb-card-pic"><img src="assets/bb-draw-this-or-that.jpg" alt="A drawing of students lined up across a classroom, one side stepping left and the other stepping right for a This or That call."></span>
+        <span class="bb-card-name">This or That</span>
+        <span class="chip red bb-card-time">3 minutes</span>
+      </button>
+      <button type="button" class="bb-card" data-bb-card="four_corners">
+        <span class="bb-card-pic"><img src="assets/bb-draw-four-corners.jpg" alt="A drawing of students standing in the four corners of a classroom, each corner marked with a card suit symbol."></span>
+        <span class="bb-card-name">Four Corners</span>
+        <span class="chip red bb-card-time">3 minutes</span>
+      </button>
+      <button type="button" class="bb-card" data-bb-card="boi_ing_7">
+        <span class="bb-card-pic"><img src="assets/bb-draw-boi-ing-7.jpg" alt="A drawing of students standing in a circle counting around, jumping as they call boi-ing on a number with a seven in it."></span>
+        <span class="bb-card-name">Boi-ing 7</span>
+        <span class="chip red bb-card-time">3 minutes</span>
+      </button>
+      <button type="button" class="bb-card" data-bb-card="look_down_look_up">
+        <span class="bb-card-pic"><img src="assets/bb-draw-look-down-look-up.jpg" alt="A drawing of students in a circle looking down at an object on the floor, ready to look up on the call."></span>
+        <span class="bb-card-name">Look Down, Look Up</span>
+        <span class="chip red bb-card-time">3 minutes</span>
+      </button>
+      <button type="button" class="bb-card" data-bb-card="bang_circle">
+        <span class="bb-card-pic"><img src="assets/bb-draw-bang-circle.jpg" alt="A drawing of students in a circle with a caller in the middle, two students turning to shout Bang at each other."></span>
+        <span class="bb-card-name">Bang Circle</span>
+        <span class="chip red bb-card-time">3 minutes</span>
+      </button>
+      <button type="button" class="bb-card" data-bb-card="heads_or_tails">
+        <span class="bb-card-pic"><img src="assets/bb-draw-heads-or-tails.jpg" alt="A drawing of students standing with hands on their heads or their hips, choosing heads or tails before the coin flip."></span>
+        <span class="bb-card-name">Heads or Tails</span>
+        <span class="chip red bb-card-time">3 minutes</span>
+      </button>
+      <button type="button" class="bb-card" data-bb-card="silent_ball">
+        <span class="bb-card-pic"><img src="assets/bb-draw-silent-ball.jpg" alt="A drawing of students standing spread out in a classroom, passing a ball to each other in silence."></span>
+        <span class="bb-card-name">Silent Ball</span>
+        <span class="chip red bb-card-time">3 minutes</span>
+      </button>
+      <button type="button" class="bb-card" data-bb-card="heads_down_thumbs_up">
+        <span class="bb-card-pic"><img src="assets/bb-draw-heads-down-thumbs-up.jpg" alt="A drawing of students sitting with their heads down and thumbs raised, waiting to be tapped by a Tapper walking round the room."></span>
+        <span class="bb-card-name">Heads Down, Thumbs Up</span>
+        <span class="chip red bb-card-time">10 minutes</span>
+      </button>
     </div>
+    <button type="button" class="bb-pick-btn reveal" data-bb-pick>Pick for us</button>
   </div>
 </section>
 
@@ -1986,28 +2025,57 @@ ul.plain li::before { color:var(--p-i-ink); }
 </section>
 
 <!-- ===========================================
-     BRAIN BREAK BANK
-     Six ready slides, held inert inside <template id="brainBreakBank"> so the
-     lesson run, the Overview, slide numbers, the sweep and the timer groups
-     never see them: a <template>'s content is not part of the live document,
-     so it is never matched by document.querySelectorAll('.slide') and RUNTIME_STRIP
-     has nothing to strip here. Rules are word for word from
-     lesson-pipeline-v2/kb/brain-breaks.md; a build copies only the slides it picks
-     into the lesson run it is building, exactly as the sheet template is copied
-     and adapted, never linked to live.
-     The picker order below is Igor's own: This or That, Four Corners, Boi-ing 7,
-     Look Down Look Up, Bang Circle, Heads or Tails.
-     =========================================== -->
+     BRAIN BREAK BANK: eight side trips, live in the document, outside the lesson run.
+     Nobody decides the break at build time (Igor, 28 Sep 2026): a Brain Break menu
+     slide sits where a fixed break used to, with a big picture card for each of the
+     eight breaks below; the class or Igor taps a card, or taps Pick for us, and the
+     deck opens that break, plays it, then comes back to the lesson exactly where it
+     left off. The eight sections here are ordinary slides marked data-side-trip, so
+     next(), prev(), the arrow keys, the on screen BACK and NEXT, Home and End, the nav
+     dots and the Overview all skip straight past them (SlidePresentation.isSideTrip());
+     they are only ever reached by a menu card, Pick for us, or a direct link. Rules are
+     word for word from lesson-pipeline-v2/kb/brain-breaks.md.
+     The card order on every menu is Igor's own: This or That, Four Corners, Boi-ing 7,
+     Look Down, Look Up, Bang Circle, Heads or Tails, Silent Ball, Heads Down, Thumbs Up.
+     Open the deck with ?bank on the address to walk the first menu and all eight breaks
+     on their own, in order, for review and screenshots. -->
 <style id="bbBankStyle">
-/* The bank's own tiny styling. Theme tokens only, nothing hard coded. */
+/* The bank's own tiny styling, and the Brain Break menu's. Theme tokens only,
+   nothing hard coded, so any theme restyles both with no extra work. */
 .bb-pairs { list-style:none; display:flex; flex-direction:column; gap:var(--element-gap); margin:0; padding:0; }
 .bb-pairs li { background:var(--panel-2); padding:0.4em 0.85em; font-family:var(--font-body);
   font-size:var(--body-size); line-height:1.4; color:var(--mist); border:var(--px) solid var(--edge); }
+/* the menu grid: eight cards, as big as the slide allows, 4 across by 2 down */
+.bb-menu-grid { display:grid; grid-template-columns:repeat(4, minmax(0,1fr)); grid-template-rows:repeat(2, minmax(0,1fr));
+  gap:clamp(8px, 1vw, 18px); flex:1 1 auto; min-height:0; width:100%; margin-top:calc(var(--element-gap) * 0.3); }
+.bb-card { display:flex; flex-direction:column; align-items:center; text-align:center; gap:clamp(3px,0.6vh,9px);
+  min-height:0; min-width:0; background:var(--panel); color:var(--ink); border:0; cursor:pointer;
+  padding:clamp(0.3rem,0.8vh,0.65rem);
+  box-shadow:inset calc(var(--px) * -1) calc(var(--px) * -1) 0 rgba(0,0,0,.16),
+             inset var(--px) var(--px) 0 rgba(255,255,255,.9);
+  transition:filter .15s ease, box-shadow .15s ease; }
+.bb-card:hover { filter:brightness(0.95); }
+.bb-card:focus-visible { outline:3px solid var(--p-o); outline-offset:3px; }
+.bb-card-pic { flex:1 1 auto; min-height:0; width:100%; display:flex; overflow:hidden; }
+.bb-card-pic img { width:100%; height:100%; object-fit:cover; display:block; box-shadow:0 0 0 var(--px) var(--stone-dark); }
+.bb-card-name { flex:none; font-family:var(--font-display); font-size:var(--h3-size); line-height:1.2; }
+.bb-card-time { flex:none; }
+/* Pick for us: the live hop lands here and holds, before the break opens. */
+.bb-card.bb-pick-live { box-shadow:0 0 4px 2px var(--p-o),
+             inset calc(var(--px) * -1) calc(var(--px) * -1) 0 rgba(0,0,0,.16),
+             inset var(--px) var(--px) 0 rgba(255,255,255,.9); filter:brightness(0.95); }
+.bb-pick-btn { align-self:center; flex:none; margin-top:calc(var(--element-gap) * 0.55); font-family:var(--font-display);
+  font-size:calc(clamp(0.72rem,1.5vw,1.1rem) * var(--font-scale)); background:var(--p-t); color:#fff; border:0;
+  padding:0.7em 1.4em; cursor:pointer;
+  box-shadow:inset calc(var(--px) * -1) calc(var(--px) * -1) 0 rgba(0,0,0,.32), inset var(--px) var(--px) 0 rgba(255,255,255,.4); }
+.bb-pick-btn:hover { filter:brightness(1.08); }
+.bb-pick-btn:focus-visible { outline:3px solid var(--p-o); outline-offset:3px; }
+.bb-back { margin-top:calc(var(--element-gap) * 0.5); }
+@media (max-width:900px) { .bb-menu-grid { grid-template-columns:repeat(2, minmax(0,1fr)); grid-template-rows:repeat(4, minmax(0,1fr)); } }
 </style>
-<template id="brainBreakBank">
 
 <!-- Brain break bank: This or That -->
-<section class="slide g-grassy" data-timer="180" data-notes="&lt;strong&gt;This or That, 3 minutes.&lt;/strong&gt; Everyone lines up in a straight line across the middle of the room. Read out a pair, straight off the list below, or one of your own. &lt;strong&gt;Give 3 to 5 seconds to decide and step, then call the next pair straight away.&lt;/strong&gt; 5 to 10 prompts is plenty, more if they are still engaged.">
+<section class="slide g-grassy" data-side-trip data-bb-break="this_or_that" data-timer="180" data-notes="&lt;strong&gt;This or That, 3 minutes.&lt;/strong&gt; Everyone lines up in a straight line across the middle of the room. Read out a pair, straight off the list below, or one of your own. &lt;strong&gt;Give 3 to 5 seconds to decide and step, then call the next pair straight away.&lt;/strong&gt; 5 to 10 prompts is plenty, more if they are still engaged.">
   <div class="slide-content" style="max-width:min(96vw,2400px)">
     <p class="eyebrow reveal">// brain_break_bank &middot; this_or_that</p>
     <h2 class="reveal" style="margin-bottom:calc(var(--element-gap) * 0.5)">This or That</h2>
@@ -2029,15 +2097,18 @@ ul.plain li::before { color:var(--p-i-ink); }
         </ul>
         <p class="reveal" style="margin-top:calc(var(--element-gap) * 0.5)"><span class="chip red">3 minutes</span></p>
       </div>
-      <div class="col-img picfig reveal" style="">
-        <img class="photo" src="assets/bb-draw-this-or-that.jpg" alt="A drawing of students lined up across a classroom, one side stepping left and the other stepping right for a This or That call.">
+      <div class="col-img reveal" style="display:flex; flex-direction:column; align-items:center; gap:calc(var(--element-gap) * 0.6); min-width:0">
+        <div class="picfig" style="">
+          <img class="photo" src="assets/bb-draw-this-or-that.jpg" alt="A drawing of students lined up across a classroom, one side stepping left and the other stepping right for a This or That call.">
+        </div>
+        <button type="button" class="flip-both bb-back" data-bb-back>Back to the lesson</button>
       </div>
     </div>
   </div>
 </section>
 
 <!-- Brain break bank: Four Corners -->
-<section class="slide g-grassy" data-timer="180" data-prep="Four card suits, one taped in each corner of IG04." data-notes="&lt;strong&gt;Four Corners, 3 minutes.&lt;/strong&gt; Everyone up, choose a corner, no talking. &lt;strong&gt;The four suit cards are taped in the corners of the room. Tap DRAW A CARD on the slide, so no pack and no phone are needed.&lt;/strong&gt; Keep playing until only one student is left.">
+<section class="slide g-grassy" data-side-trip data-bb-break="four_corners" data-timer="180" data-notes="&lt;strong&gt;Four Corners, 3 minutes.&lt;/strong&gt; Room prep if this one gets picked: four card suits taped in the corners of the room before the lesson. Everyone up, choose a corner, no talking. &lt;strong&gt;Tap DRAW A CARD on the slide, so no pack and no phone are needed.&lt;/strong&gt; Keep playing until only one student is left.">
   <div class="slide-content" style="max-width:min(96vw,2400px)">
     <p class="eyebrow reveal">// brain_break_bank &middot; four_corners</p>
     <h2 class="reveal" style="margin-bottom:calc(var(--element-gap) * 0.5)">Four Corners</h2>
@@ -2072,13 +2143,14 @@ ul.plain li::before { color:var(--p-i-ink); }
             <button class="flip-both" id="cardAgain" type="button">DRAW A CARD</button>
           </div>
         </div>
+        <p class="reveal" style="margin-top:calc(var(--element-gap) * 0.5)"><button type="button" class="flip-both bb-back" data-bb-back>Back to the lesson</button></p>
       </div>
     </div>
   </div>
 </section>
 
 <!-- Brain break bank: Boi-ing 7 -->
-<section class="slide g-grassy" data-timer="180" data-notes="&lt;strong&gt;Boi-ing 7, 3 minutes.&lt;/strong&gt; Everyone stands in a circle facing inwards. Nominate a student to start on &quot;one&quot; and go round the circle. &lt;strong&gt;Any number with a 7 in it, or a multiple of 7, is &quot;boi-ing&quot; instead of the number.&lt;/strong&gt; A wrong call restarts the count from one.">
+<section class="slide g-grassy" data-side-trip data-bb-break="boi_ing_7" data-timer="180" data-notes="&lt;strong&gt;Boi-ing 7, 3 minutes.&lt;/strong&gt; Everyone stands in a circle facing inwards. Nominate a student to start on &quot;one&quot; and go round the circle. &lt;strong&gt;Any number with a 7 in it, or a multiple of 7, is &quot;boi-ing&quot; instead of the number.&lt;/strong&gt; A wrong call restarts the count from one.">
   <div class="slide-content" style="max-width:min(96vw,2400px)">
     <p class="eyebrow reveal">// brain_break_bank &middot; boi_ing_7</p>
     <h2 class="reveal" style="margin-bottom:calc(var(--element-gap) * 0.5)">Boi-ing 7</h2>
@@ -2091,6 +2163,7 @@ ul.plain li::before { color:var(--p-i-ink); }
           <li class="reveal">Every time a number comes along that contains a "7" or is a multiple of 7, students must call out "boi-ing" (a jumping sound because "7" is being jumped) in place of the actual number. Counting then continues as normal until the next "7".</li>
         </ul>
         <p class="reveal" style="margin-top:calc(var(--element-gap) * 0.5)"><span class="chip red">3 minutes</span></p>
+        <p class="reveal" style="margin-top:calc(var(--element-gap) * 0.5)"><button type="button" class="flip-both bb-back" data-bb-back>Back to the lesson</button></p>
       </div>
       <div class="col-img picfig reveal" style="">
         <img class="photo" src="assets/bb-draw-boi-ing-7.jpg" alt="A drawing of students standing in a circle counting around, jumping as they call boi-ing on a number with a seven in it.">
@@ -2100,7 +2173,7 @@ ul.plain li::before { color:var(--p-i-ink); }
 </section>
 
 <!-- Brain break bank: Look Down, Look Up -->
-<section class="slide g-grassy" data-timer="180" data-notes="&lt;strong&gt;Look Down, Look Up, 3 minutes.&lt;/strong&gt; Groups of about 10 to 12 in a circle, all looking down at a small object in the middle. &lt;strong&gt;Call &quot;Look Up&quot;: anyone whose chosen person is also looking at them, both step out.&lt;/strong&gt; Then &quot;Look Down&quot; again, and repeat until one or two are left.">
+<section class="slide g-grassy" data-side-trip data-bb-break="look_down_look_up" data-timer="180" data-notes="&lt;strong&gt;Look Down, Look Up, 3 minutes.&lt;/strong&gt; Groups of about 10 to 12 in a circle, all looking down at a small object in the middle. &lt;strong&gt;Call &quot;Look Up&quot;: anyone whose chosen person is also looking at them, both step out.&lt;/strong&gt; Then &quot;Look Down&quot; again, and repeat until one or two are left.">
   <div class="slide-content" style="max-width:min(96vw,2400px)">
     <p class="eyebrow reveal">// brain_break_bank &middot; look_down_look_up</p>
     <h2 class="reveal" style="margin-bottom:calc(var(--element-gap) * 0.5)">Look Down, Look Up</h2>
@@ -2115,6 +2188,7 @@ ul.plain li::before { color:var(--p-i-ink); }
           <li class="reveal">They return their gaze to the floor and decide whom they will look at as they await the next call of "Look Up". Play continues until only one or two players remain.</li>
         </ul>
         <p class="reveal" style="margin-top:calc(var(--element-gap) * 0.5)"><span class="chip red">3 minutes</span></p>
+        <p class="reveal" style="margin-top:calc(var(--element-gap) * 0.5)"><button type="button" class="flip-both bb-back" data-bb-back>Back to the lesson</button></p>
       </div>
       <div class="col-img picfig reveal" style="">
         <img class="photo" src="assets/bb-draw-look-down-look-up.jpg" alt="A drawing of students in a circle looking down at an object on the floor, ready to look up on the call.">
@@ -2124,7 +2198,7 @@ ul.plain li::before { color:var(--p-i-ink); }
 </section>
 
 <!-- Brain break bank: Bang Circle -->
-<section class="slide g-grassy" data-timer="180" data-notes="&lt;strong&gt;Bang Circle, 3 minutes.&lt;/strong&gt; Everyone in a circle facing inward, you (or a chosen student) in the middle as the caller. &lt;strong&gt;Call names fast and keep it moving.&lt;/strong&gt; Play down to a final two for the last dramatic showdown.">
+<section class="slide g-grassy" data-side-trip data-bb-break="bang_circle" data-timer="180" data-notes="&lt;strong&gt;Bang Circle, 3 minutes.&lt;/strong&gt; Everyone in a circle facing inward, you (or a chosen student) in the middle as the caller. &lt;strong&gt;Call names fast and keep it moving.&lt;/strong&gt; Play down to a final two for the last dramatic showdown.">
   <div class="slide-content" style="max-width:min(96vw,2400px)">
     <p class="eyebrow reveal">// brain_break_bank &middot; bang_circle</p>
     <h2 class="reveal" style="margin-bottom:calc(var(--element-gap) * 0.5)">Bang Circle</h2>
@@ -2137,6 +2211,7 @@ ul.plain li::before { color:var(--p-i-ink); }
           <li class="reveal">The last two students left can have a final dramatic "BANG" showdown in the centre of the circle.</li>
         </ul>
         <p class="reveal" style="margin-top:calc(var(--element-gap) * 0.5)"><span class="chip red">3 minutes</span></p>
+        <p class="reveal" style="margin-top:calc(var(--element-gap) * 0.5)"><button type="button" class="flip-both bb-back" data-bb-back>Back to the lesson</button></p>
       </div>
       <div class="col-img picfig reveal" style="">
         <img class="photo" src="assets/bb-draw-bang-circle.jpg" alt="A drawing of students in a circle with a caller in the middle, two students turning to shout Bang at each other.">
@@ -2146,7 +2221,7 @@ ul.plain li::before { color:var(--p-i-ink); }
 </section>
 
 <!-- Brain break bank: Heads or Tails -->
-<section class="slide g-grassy" data-timer="180" data-notes="&lt;strong&gt;Heads or Tails, 3 minutes.&lt;/strong&gt; Everyone up in the middle of the room. Say &quot;Choose heads or tails!&quot;, hands on head for heads, hands on hips for tails. &lt;strong&gt;Tap the coin on the slide, then call the result.&lt;/strong&gt; Wrong guesses sit down. Keep playing until only one student is left standing.">
+<section class="slide g-grassy" data-side-trip data-bb-break="heads_or_tails" data-timer="180" data-notes="&lt;strong&gt;Heads or Tails, 3 minutes.&lt;/strong&gt; Everyone up in the middle of the room. Say &quot;Choose heads or tails!&quot;, hands on head for heads, hands on hips for tails. &lt;strong&gt;Tap the coin on the slide, then call the result.&lt;/strong&gt; Wrong guesses sit down. Keep playing until only one student is left standing.">
   <div class="slide-content" style="max-width:min(96vw,2400px)">
     <p class="eyebrow reveal">// brain_break_bank &middot; heads_or_tails</p>
     <h2 class="reveal" style="margin-bottom:calc(var(--element-gap) * 0.5)">Heads or Tails</h2>
@@ -2181,13 +2256,14 @@ ul.plain li::before { color:var(--p-i-ink); }
             <button class="flip-both" id="bbCoinAgain" type="button">FLIP THE COIN</button>
           </div>
         </div>
+        <p class="reveal" style="margin-top:calc(var(--element-gap) * 0.5)"><button type="button" class="flip-both bb-back" data-bb-back>Back to the lesson</button></p>
       </div>
     </div>
   </div>
 </section>
 
 <!-- Brain break bank: Silent Ball -->
-<section class="slide g-grassy" data-timer="180" data-prep="One soft ball ready for Silent Ball." data-notes="&lt;strong&gt;Silent Ball, 3 minutes.&lt;/strong&gt; Explain the rules first and check everyone understands before you start. The leader counts down &quot;3, 2, 1, silent&quot; and the game runs in silence from there. &lt;strong&gt;A drop, a bad pass, or any talk or noise sits a player down.&lt;/strong&gt; Variations if there is time: pass in a circle without laughing or talking, add more balls for a challenge, or play Silent Trees, where a mistake means you stand still as a tree until you deflect a pass back in.">
+<section class="slide g-grassy" data-side-trip data-bb-break="silent_ball" data-timer="180" data-notes="&lt;strong&gt;Silent Ball, 3 minutes. Room prep if this one gets picked: one soft ball ready.&lt;/strong&gt; Explain the rules first and check everyone understands before you start. The leader counts down &quot;3, 2, 1, silent&quot; and the game runs in silence from there. &lt;strong&gt;A drop, a bad pass, or any talk or noise sits a player down.&lt;/strong&gt; Variations if there is time: pass in a circle without laughing or talking, add more balls for a challenge, or play Silent Trees, where a mistake means you stand still as a tree until you deflect a pass back in.">
   <div class="slide-content" style="max-width:min(96vw,2400px)">
     <p class="eyebrow reveal">// brain_break_bank &middot; silent_ball</p>
     <h2 class="reveal" style="margin-bottom:calc(var(--element-gap) * 0.5)">Silent Ball</h2>
@@ -2200,6 +2276,7 @@ ul.plain li::before { color:var(--p-i-ink); }
           <li class="reveal">Play continues until only one person remains. The last player standing gets to be first to throw the ball in the next round.</li>
         </ul>
         <p class="reveal" style="margin-top:calc(var(--element-gap) * 0.5)"><span class="chip red">3 minutes</span></p>
+        <p class="reveal" style="margin-top:calc(var(--element-gap) * 0.5)"><button type="button" class="flip-both bb-back" data-bb-back>Back to the lesson</button></p>
       </div>
       <div class="col-img picfig reveal" style="">
         <img class="photo" src="assets/bb-draw-silent-ball.jpg" alt="A drawing of students standing spread out in a classroom, passing a ball to each other in silence.">
@@ -2209,7 +2286,7 @@ ul.plain li::before { color:var(--p-i-ink); }
 </section>
 
 <!-- Brain break bank: Heads Down, Thumbs Up -->
-<section class="slide g-grassy" data-timer="600" data-notes="&lt;strong&gt;Heads Down, Thumbs Up, 10 to 15 minutes.&lt;/strong&gt; Choose 2 to 4 Tappers silently before heads go down. Everyone else keeps eyes closed and heads down until the signal to sit up. &lt;strong&gt;A correct guess swaps the Guesser and the Tapper; a wrong guess keeps the same Tapper for the next round.&lt;/strong&gt; Keep playing until the time is up or everyone has had a turn as Tapper.">
+<section class="slide g-grassy" data-side-trip data-bb-break="heads_down_thumbs_up" data-timer="600" data-notes="&lt;strong&gt;Heads Down, Thumbs Up, 10 to 15 minutes.&lt;/strong&gt; Choose 2 to 4 Tappers silently before heads go down. Everyone else keeps eyes closed and heads down until the signal to sit up. &lt;strong&gt;A correct guess swaps the Guesser and the Tapper; a wrong guess keeps the same Tapper for the next round.&lt;/strong&gt; Keep playing until the time is up or everyone has had a turn as Tapper.">
   <div class="slide-content" style="max-width:min(96vw,2400px)">
     <p class="eyebrow reveal">// brain_break_bank &middot; heads_down_thumbs_up</p>
     <h2 class="reveal" style="margin-bottom:calc(var(--element-gap) * 0.5)">Heads Down, Thumbs Up</h2>
@@ -2225,6 +2302,7 @@ ul.plain li::before { color:var(--p-i-ink); }
           <li class="reveal">Correct guess: the Guesser and Tapper swap roles. Incorrect guess: the Tapper stays in their role for the next round.</li>
         </ul>
         <p class="reveal" style="margin-top:calc(var(--element-gap) * 0.4)"><span class="chip red">10 minutes</span></p>
+        <p class="reveal" style="margin-top:calc(var(--element-gap) * 0.4)"><button type="button" class="flip-both bb-back" data-bb-back>Back to the lesson</button></p>
       </div>
       <div class="col-img picfig reveal" style="">
         <img class="photo" src="assets/bb-draw-heads-down-thumbs-up.jpg" alt="A drawing of students sitting with their heads down and thumbs raised, waiting to be tapped by a Tapper walking round the room.">
@@ -2233,51 +2311,55 @@ ul.plain li::before { color:var(--p-i-ink); }
   </div>
 </section>
 
-</template>
 <script>
 /* ===========================================
-   BRAIN BREAK BANK: the ?bank bootstrap.
-   Runs at parse time, before the deck engine's own main script block boots, so
-   presentation.slides, the Overview, the sweep and the timer groups are built
-   against whichever DOM is here when THEY run. With ?bank on the address, the
-   bank's six slides are cloned in, in place of the lesson run, and the lesson's
-   own 25 slides are taken out; without ?bank this whole block is a no-op and
-   nothing here is ever touched.
+   HEADS OR TAILS: the coin, built in slide (root rule 10), ported from the Coin
+   class of g10-week3-lesson1.html's Heads or Tails brain break. Kept in its own
+   tiny IIFE with ids prefixed bb, so it never shares a name with the main
+   script's own CoinPair/Coin classes further down. It used to run only under
+   ?bank, when the bank's slides were cloned in from a <template>; the break is
+   now a live side trip every deck loads, so this always runs, ?bank or not.
    =========================================== */
 (function () {
   try {
-    if (!/(^|[?&])bank(=|&|$)/.test(location.search)) return;
-    var tpl = document.getElementById('brainBreakBank');
-    if (!tpl) return;
-    var oldSlides = Array.prototype.slice.call(document.querySelectorAll('section.slide'));
-    if (!oldSlides.length) return;
-    var anchor = oldSlides[0];
-    var frag = tpl.content.cloneNode(true);
-    anchor.parentNode.insertBefore(frag, anchor);
-    oldSlides.forEach(function (s) { s.parentNode.removeChild(s); });
-
-    /* Heads or Tails: one coin, built in slide (root rule 10), ported from the
-       Coin class of g10-week3-lesson1.html's Heads or Tails brain break. Kept
-       inside this IIFE with ids prefixed bb, so it never shares a name with the
-       main script's own CoinPair/Coin classes below. */
     var btn = document.getElementById('bbCoinBtn');
-    if (btn) {
-      var inner = document.getElementById('bbCoinInner');
-      var out = document.getElementById('bbCoinOut');
-      var rot = 0, spinTimer = null;
-      var flip = function () {
-        var heads = Math.random() < 0.5;
-        var spins = 4 + Math.floor(Math.random() * 3);
-        rot += spins * 360 + (heads ? 0 : 180) - (rot % 360);
-        inner.style.transform = 'rotateY(' + rot + 'deg)';
-        out.textContent = '...';
-        clearTimeout(spinTimer);
-        spinTimer = setTimeout(function () { out.textContent = heads ? 'HEADS' : 'TAILS'; }, 1650);
-      };
-      btn.addEventListener('click', flip);
-      var again = document.getElementById('bbCoinAgain');
-      if (again) again.addEventListener('click', flip);
-    }
+    if (!btn) return;
+    var inner = document.getElementById('bbCoinInner');
+    var out = document.getElementById('bbCoinOut');
+    var rot = 0, spinTimer = null;
+    var flip = function () {
+      var heads = Math.random() < 0.5;
+      var spins = 4 + Math.floor(Math.random() * 3);
+      rot += spins * 360 + (heads ? 0 : 180) - (rot % 360);
+      inner.style.transform = 'rotateY(' + rot + 'deg)';
+      out.textContent = '...';
+      clearTimeout(spinTimer);
+      spinTimer = setTimeout(function () { out.textContent = heads ? 'HEADS' : 'TAILS'; }, 1650);
+    };
+    btn.addEventListener('click', flip);
+    var again = document.getElementById('bbCoinAgain');
+    if (again) again.addEventListener('click', flip);
+  } catch (e) {}
+})();
+
+/* ===========================================
+   ?bank: isolate the menu and the eight breaks for review and screenshots.
+   Runs at parse time, before the deck engine's own main script block boots, so
+   presentation.slides is built against whichever DOM is here when IT runs.
+   With ?bank on the address, every lesson slide is removed except the first
+   Brain Break menu, and every side trip loses its data-side-trip mark, so the
+   nine that are left behave as one ordinary run: NEXT walks the menu, then all
+   eight breaks, in order. Without ?bank this whole block is a no-op. */
+(function () {
+  try {
+    if (!/(^|[?&])bank(=|&|$)/.test(location.search)) return;
+    var all = Array.prototype.slice.call(document.querySelectorAll('section.slide'));
+    if (!all.length) return;
+    var breaks = all.filter(function (s) { return s.hasAttribute('data-side-trip'); });
+    var menu = all.filter(function (s) { return s.hasAttribute('data-bb-menu'); })[0];
+    var keep = menu ? [menu].concat(breaks) : breaks;
+    all.forEach(function (s) { if (keep.indexOf(s) === -1) s.parentNode.removeChild(s); });
+    breaks.forEach(function (s) { s.removeAttribute('data-side-trip'); });
   } catch (e) {}
 })();
 </script>
@@ -2481,7 +2563,7 @@ const RUNTIME_STRIP = {
             ['.slide', 'has-chips'], ['.slide', 'chip-cover-active'], ['.ov-grid', 'seven'],
             ['#isamsPop', 'show'], ['#speakerNotes', 'visible'],
             ['#overview', 'open'], ['#overview', 'fanned'], ['*', 'overview-open'],
-            ['#prepZoom', 'open'], ['*', 'prep-zoom-open']],
+            ['#prepZoom', 'open'], ['*', 'prep-zoom-open'], ['.bb-card', 'bb-pick-live']],
   /* inline style properties measured at run time, as [selector, property] */
   styleProps: [['*', '--pic-w'], ['*', '--font-scale'], ['*', '--slide-num-w'], ['*', '--chip-gutter'],
                ['*', '--hint-max'], ['*', '--nav-h'], ['.progress-bar', 'width'], ['#cursorFx', 'width'],
@@ -2533,14 +2615,14 @@ const ELEMENTS = [
   { id: 'lap1',    name: 'Saying No to Cyberbullying: the role play', lap: true,
     cfu: 'Name one move you make when someone is mean to you online, and say why.',
     sc: 'Success Criteria 2 and 3: explain what to do, and manage your chat',
-    brainBreak: 'Four Corners' },
+    brainBreak: 'Class picks from the menu' },
   /* no card picture: the Overview grid is three rows and must never scroll at
      either of Igor's window shapes (deck law, The Overview, point 14). The
      Bloon Pop title screen is on slide 21 at a size a teacher can point at. */
   { id: 'lap2',    name: 'Good Game', lap: true,
     cfu: 'Name one problem you met in Good Game, and which tool you chose.',
     sc: 'Success Criteria 1: identify a problem and pick the right tool',
-    brainBreak: 'Bang Circle' },
+    brainBreak: 'Class picks from the menu' },
   { id: 'reflect', name: 'Reflection and exit' }
   /* Two laps and no intro row, so SEVEN cards: three across, then two, then two, on a
      six column grid, which fills every row (deck law, The Overview, points 1 and 14).
@@ -3194,6 +3276,10 @@ class SlidePresentation {
     this.navTarget = -1;
     this.navTimer = null;
     this.navScrollEndHandler = null;
+    /* Brain break side trips: which menu the class tapped a card (or Pick for us)
+       from, so Back to the lesson and NEXT know where to return. Session only,
+       like every other deck control except the inline edits. */
+    this.originMenuIndex = null;
     this.bindKeyboard();
     this.bindWheelTouch();
     this.buildDots();
@@ -3215,10 +3301,44 @@ class SlidePresentation {
      publishes it; it also autosaves to localStorage under HIDDEN_KEY, which a
      DECK_VERSION bump purges exactly as it purges the inline edits. */
   isHidden(i) { return this.slides[i].hasAttribute('data-hidden'); }
-  firstVisible() { for (let i = 0; i < this.total; i++) if (!this.isHidden(i)) return i; return 0; }
-  lastVisible() { for (let i = this.total - 1; i >= 0; i--) if (!this.isHidden(i)) return i; return this.total - 1; }
-  nextVisible(from, dir) { for (let i = from + dir; i >= 0 && i < this.total; i += dir) if (!this.isHidden(i)) return i; return null; }
-  visibleList() { const a = []; for (let i = 0; i < this.total; i++) if (!this.isHidden(i)) a.push(i); return a; }
+  /* ---- BRAIN BREAK SIDE TRIPS ----
+     A side trip is a break slide sitting after the last lesson slide, marked
+     data-side-trip. It is outside the lesson run: every visibility check below
+     skips it exactly as it skips a hidden slide, so next(), prev(), the arrow
+     keys, Home, End, the nav dots and the Overview all pass straight over it,
+     and the lesson's own slide count and slide numbers never move. A side trip
+     is only ever reached directly: a menu card, Pick for us, or a link. */
+  isSideTrip(i) { return this.slides[i].hasAttribute('data-side-trip'); }
+  isBBMenu(i) { return this.slides[i].hasAttribute('data-bb-menu'); }
+  firstVisible() { for (let i = 0; i < this.total; i++) if (!this.isHidden(i) && !this.isSideTrip(i)) return i; return 0; }
+  lastVisible() { for (let i = this.total - 1; i >= 0; i--) if (!this.isHidden(i) && !this.isSideTrip(i)) return i; return this.total - 1; }
+  nextVisible(from, dir) { for (let i = from + dir; i >= 0 && i < this.total; i += dir) if (!this.isHidden(i) && !this.isSideTrip(i)) return i; return null; }
+  visibleList() { const a = []; for (let i = 0; i < this.total; i++) if (!this.isHidden(i) && !this.isSideTrip(i)) a.push(i); return a; }
+  /* the first Brain Break menu in the run, the fallback when no menu was
+     remembered (?bank, a direct link, or a reload mid break) */
+  findFirstMenu() { for (let i = 0; i < this.total; i++) if (this.isBBMenu(i)) return i; return null; }
+  findSideTrip(slug) { for (let i = 0; i < this.total; i++) if (this.slides[i].dataset.bbBreak === slug) return i; return null; }
+  /* A menu card, or Pick for us, opens a break: remember the menu the class
+     tapped from, then jump straight to that break. */
+  openSideTrip(slug) {
+    const idx = this.findSideTrip(slug);
+    if (idx === null) return;
+    this.originMenuIndex = this.current;
+    this.goTo(idx);
+  }
+  /* Back to the lesson, and NEXT once a break's reveals are all out, both land
+     here: the slide right after the menu the class came from, or the first
+     menu's next slide when none was remembered. */
+  returnFromSideTrip() {
+    const menu = (this.originMenuIndex !== null && this.isBBMenu(this.originMenuIndex)) ? this.originMenuIndex : this.findFirstMenu();
+    const target = menu !== null ? this.nextVisible(menu, 1) : null;
+    this.goTo(target !== null ? target : this.firstVisible());
+  }
+  /* BACK from a break, with no reveals showing, returns to that menu. */
+  backToMenu() {
+    const menu = (this.originMenuIndex !== null && this.isBBMenu(this.originMenuIndex)) ? this.originMenuIndex : this.findFirstMenu();
+    if (menu !== null) this.goTo(menu);
+  }
   toggleHideCurrent() {
     const s = this.slides[this.current];
     if (s.hasAttribute('data-hidden')) s.removeAttribute('data-hidden'); else s.setAttribute('data-hidden', 'true');
@@ -3253,6 +3373,7 @@ class SlidePresentation {
   next() {
     if (sheetWalk(1)) return;    /* the full screen sheet is walking its own rings */
     if (overviewOpen()) { deckOverview.close(); return; }
+    if (this.isSideTrip(this.current)) { this.returnFromSideTrip(); return; }
     const frags = this.getFragments();
     const hidden = frags.filter(f => !f.classList.contains('fragment-visible'));
     if (hidden.length) {
@@ -3266,6 +3387,7 @@ class SlidePresentation {
   prev() {
     if (sheetWalk(-1)) return;   /* and BACK walks it the other way */
     if (overviewOpen()) { deckOverview.close(); return; }
+    if (this.isSideTrip(this.current)) { this.backToMenu(); return; }
     const frags = this.getFragments();
     const shown = frags.filter(f => f.classList.contains('fragment-visible'));
     if (shown.length) {
@@ -3394,7 +3516,9 @@ class SlidePresentation {
     this.dots = document.querySelector('.nav-dots');
     this.dots.innerHTML = ''; /* clear so a saved copy does not duplicate dots */
     this.slides.forEach((s, i) => {
+      if (this.isSideTrip(i)) return;   /* a side trip carries no dot of its own */
       const b = document.createElement('button');
+      b.dataset.slideIndex = String(i);
       b.setAttribute('aria-label', 'Go to slide ' + (i + 1));
       b.addEventListener('click', () => this.goTo(i));
       this.dots.appendChild(b);
@@ -3424,12 +3548,14 @@ class SlidePresentation {
   }
   update() {
     document.querySelector('.progress-bar').style.width = ((this.current + 1) / this.total * 100) + '%';
-    this.dots.querySelectorAll('button').forEach((b, i) => {
+    this.dots.querySelectorAll('button').forEach((b) => {
+      const i = parseInt(b.dataset.slideIndex, 10);
       b.classList.toggle('active', i === this.current);
       b.classList.toggle('is-hidden', this.isHidden(i));
     });
     const vis = this.visibleList();
     const cur = this.isHidden(this.current);
+    const onSideTrip = this.isSideTrip(this.current);
     const badge = document.getElementById('hiddenBadge');
     if (badge) badge.classList.toggle('show', cur);
     const hb = document.getElementById('hideSlideBtn');
@@ -3441,7 +3567,8 @@ class SlidePresentation {
     }
     const num = document.getElementById('slideNum');
     if (num) num.textContent = overviewOpen() ? 'Overview'
-      : (cur ? '(hidden) / ' + vis.length : (vis.indexOf(this.current) + 1) + ' / ' + vis.length);
+      : (onSideTrip ? 'Brain Break'
+      : (cur ? '(hidden) / ' + vis.length : (vis.indexOf(this.current) + 1) + ' / ' + vis.length));
   }
 }
 
@@ -3793,6 +3920,63 @@ class CardDraw {
     this.out.textContent = '...';
     clearTimeout(this.timer);
     this.timer = setTimeout(() => { this.out.textContent = suit.name + '!'; }, 1650);
+  }
+}
+
+/* ===========================================
+   THE BRAIN BREAK MENU
+   Igor, 28 Sep 2026: nobody decides the break at build time. Every menu slide
+   (data-bb-menu) gets one of these: tapping a card opens that break, and Pick
+   for us runs a short slowing hop across the cards before it lands on one at
+   random and opens it. Math.random is fine here; prefers-reduced-motion skips
+   the hop and just highlights the pick before it opens. Two menus share the
+   deck's one set of eight break slides, so this is built once per menu found. */
+class BrainBreakMenu {
+  constructor(section, presentation) {
+    this.section = section;
+    this.presentation = presentation;
+    this.cards = Array.from(section.querySelectorAll('.bb-card'));
+    this.shuffling = false;
+    this.cards.forEach(card => {
+      card.addEventListener('click', (e) => {
+        if (e.detail > 0) card.blur();
+        if (this.shuffling) return;
+        presentation.openSideTrip(card.dataset.bbCard);
+      });
+    });
+    const pick = section.querySelector('[data-bb-pick]');
+    if (pick) pick.addEventListener('click', (e) => { if (e.detail > 0) pick.blur(); this.pickForUs(); });
+  }
+  reduced() { return matchMedia('(prefers-reduced-motion: reduce)').matches; }
+  clearHighlight() { this.cards.forEach(c => c.classList.remove('bb-pick-live')); }
+  pickForUs() {
+    if (this.shuffling || !this.cards.length) return;
+    this.shuffling = true;
+    const target = Math.floor(Math.random() * this.cards.length);
+    const land = () => {
+      this.clearHighlight();
+      this.cards[target].classList.add('bb-pick-live');
+      setTimeout(() => {
+        this.shuffling = false;
+        this.clearHighlight();
+        this.presentation.openSideTrip(this.cards[target].dataset.bbCard);
+      }, 520);
+    };
+    if (this.reduced()) { land(); return; }
+    /* a hop that slows down: about 1.5 to 2 seconds of visible movement, then
+       land() takes over and shows the true random pick */
+    let hop = 0, delay = 65, elapsed = 0;
+    const budget = 1750;
+    const step = () => {
+      this.clearHighlight();
+      this.cards[hop % this.cards.length].classList.add('bb-pick-live');
+      hop++;
+      delay = Math.min(260, delay * 1.14);
+      elapsed += delay;
+      if (elapsed >= budget) { land(); return; }
+      setTimeout(step, delay);
+    };
+    step();
   }
 }
 
@@ -5537,6 +5721,14 @@ new IsamsReminder(presentation);
 const slideTimer = new SlideTimer(presentation);
 new CoinPair();
 new CardDraw();
+/* Brain break menus: one per data-bb-menu slide, sharing the deck's one set of
+   eight break slides. The Back to the lesson button is static markup on every
+   break, wired here rather than rebuilt at runtime. */
+document.querySelectorAll('[data-bb-menu]').forEach(section => new BrainBreakMenu(section, presentation));
+document.querySelectorAll('[data-bb-back]').forEach(btn => btn.addEventListener('click', (e) => {
+  if (e.detail > 0) btn.blur();
+  presentation.returnFromSideTrip();
+}));
 new FontScaleController();
 new FullscreenController();
 new TeacherToggle();
