@@ -591,7 +591,6 @@ button.tt-first-line:hover, button.tt-first-line:focus-visible { text-decoration
 /* the non-breaking space is load-bearing: a plain trailing space collapses and
    welds "teacher only ·" onto the first word of the callout */
 .tcall::before { content:"teacher only \00B7\00A0"; color:var(--p-o); }
-body.hide-teacher [data-teacher-only="true"] { display:none; }
 
 /* ===========================================
    iSAMS REGISTER POP-UP: cannot be missed
@@ -704,11 +703,11 @@ body.edit-active #hiddenBadge { top:56px; }
   display:flex; align-items:center; gap:6px; background:var(--panel); padding:5px 8px;
   font-family:var(--font-label); color:#fff; font-size:18px; box-shadow:inset -3px -3px 0 rgba(0,0,0,.4); }
 .fs-btn { border:0; background:#2A3350; color:#fff; font-family:var(--font-label); font-size:18px; padding:2px 9px; cursor:pointer; }
+.fs-btn svg { vertical-align:-3px; }
 .fs-btn:hover { background:#38436A; }
 .fs-btn:disabled { opacity:.35; cursor:default; }
 .fs-btn:focus-visible { outline:2px solid var(--p-i); }
 .ctrl-divider { width:1px; height:18px; background:rgba(255,255,255,.25); }
-.teacher-btn.off { opacity:.4; text-decoration:line-through; }
 .edit-btn.active { background:var(--p-o); color:var(--ink); }
 
 /* The panel stands ABOVE the bottom bar: its bottom edge is the bar's own
@@ -2331,9 +2330,7 @@ ul.plain li::before { color:var(--p-i-ink); }
   <span id="fsLabel">100%</span>
   <button id="fsPlus" class="fs-btn" aria-label="Larger text" title="Larger (⌘ .)">A+</button>
   <span class="ctrl-divider" aria-hidden="true"></span>
-  <button id="fullscreenBtn" class="fs-btn" aria-label="Fullscreen" title="Fullscreen (F)">⏣</button>
-  <span class="ctrl-divider" aria-hidden="true"></span>
-  <button id="teacherBtn" class="fs-btn teacher-btn" aria-label="Hide teacher callouts" title="Toggle teacher prompts (⌘⇧H)">🎓</button>
+  <button id="fullscreenBtn" class="fs-btn" aria-label="Fullscreen" title="Fullscreen (F)"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 9V3H9M21 9V3H15M21 15V21H15M3 15V21H9"/></svg></button>
   <span class="ctrl-divider" aria-hidden="true"></span>
   <button id="hideSlideBtn" class="fs-btn hide-slide-btn" aria-label="Hide this slide" title="Hide this slide, skipped when presenting (H)">👁</button>
   <span class="ctrl-divider" aria-hidden="true"></span>
@@ -2450,7 +2447,7 @@ ul.plain li::before { color:var(--p-i-ink); }
    stored edits so a stale edit can never be restored over a restructured deck.
    The slides the teacher has hidden persist the same way, under their own version-keyed
    name, so a hide survives a refresh mid-lesson but never outlives a push.
-   Everything else (font scale, teacher toggle, iSAMS state, timers) stays session-only. */
+   Everything else (font scale, iSAMS state, timers) stays session-only. */
 const DECK_VERSION = 'v20260927-144938';
 
 /* ===========================================
@@ -3827,7 +3824,14 @@ class FontScaleController {
 
 /* ===========================================
    FULLSCREEN
+   The glyph is an inline SVG so every theme restyles it through currentColor
+   (stroke:currentColor picks up the button's own ink). Two four-bracket icons,
+   enter and exit, swap on fullscreenchange (and its webkit alias for older
+   Safari), on the F shortcut, and on click, so the icon always matches the
+   real fullscreen state rather than just the button that was clicked.
    =========================================== */
+const FS_ICON_ENTER = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 9V3H9M21 9V3H15M21 15V21H15M3 15V21H9"/></svg>';
+const FS_ICON_EXIT  = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 3V9H3M15 3V9H21M15 21V15H21M9 21V15H3"/></svg>';
 class FullscreenController {
   constructor() {
     this.btn = document.getElementById('fullscreenBtn');
@@ -3839,37 +3843,19 @@ class FullscreenController {
         this.toggle();
       }
     });
-    document.addEventListener('fullscreenchange', () => {
-      const on = !!document.fullscreenElement;
-      this.btn.setAttribute('aria-label', on ? 'Exit fullscreen' : 'Fullscreen');
-    });
+    document.addEventListener('fullscreenchange', () => this.sync());
+    document.addEventListener('webkitfullscreenchange', () => this.sync());
+    this.sync();
   }
   toggle() {
     if (document.fullscreenElement) document.exitFullscreen();
     else document.documentElement.requestFullscreen();
   }
-}
-
-/* ===========================================
-   TEACHER TOGGLE (session-only)
-   =========================================== */
-class TeacherToggle {
-  constructor() {
-    this.btn = document.getElementById('teacherBtn');
-    this.hidden = false;
-    this.btn.addEventListener('click', () => this.toggle());
-    document.addEventListener('keydown', (e) => {
-      if ((e.metaKey || e.ctrlKey) && e.shiftKey && (e.key === 'h' || e.key === 'H')) {
-        e.preventDefault(); this.toggle();
-      }
-    });
-    this.apply();
-  }
-  toggle() { this.hidden = !this.hidden; this.apply(); }
-  apply() {
-    document.body.classList.toggle('hide-teacher', this.hidden);
-    this.btn.classList.toggle('off', this.hidden);
-    this.btn.setAttribute('aria-label', this.hidden ? 'Show teacher callouts' : 'Hide teacher callouts');
+  sync() {
+    const on = !!(document.fullscreenElement || document.webkitFullscreenElement);
+    this.btn.innerHTML = on ? FS_ICON_EXIT : FS_ICON_ENTER;
+    this.btn.setAttribute('aria-label', on ? 'Exit fullscreen' : 'Fullscreen');
+    this.btn.setAttribute('title', on ? 'Exit fullscreen (F)' : 'Fullscreen (F)');
   }
 }
 
@@ -5539,7 +5525,6 @@ new CoinPair();
 new CardDraw();
 new FontScaleController();
 new FullscreenController();
-new TeacherToggle();
 new CursorEffects();
 sheetLightbox = new PictureLightbox(presentation);
 const coldCall = new ColdCallPicker(presentation);
@@ -5576,10 +5561,10 @@ syncFragments();
   else deckOverview.open();
 })();
 
-/* Hide a slide: the eye button in the controls pill, or a plain H.
-   Cmd+Shift+H stays the teacher-prompt toggle, so this listener takes no modifiers,
-   and it stands down while the sheet lightbox or the picker owns the screen, and
-   while the Overview is up, because hiding a slide nobody can see is a trap. */
+/* Hide a slide: the eye button in the controls pill, or a plain H. This listener
+   takes no modifiers, and it stands down while the sheet lightbox or the picker
+   owns the screen, and while the Overview is up, because hiding a slide nobody
+   can see is a trap. */
 document.getElementById('hideSlideBtn').addEventListener('click', () => presentation.toggleHideCurrent());
 document.addEventListener('keydown', (e) => {
   if (e.key !== 'h' && e.key !== 'H') return;
